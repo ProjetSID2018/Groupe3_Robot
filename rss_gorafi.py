@@ -12,7 +12,7 @@ data = req.text
 
 soup = BeautifulSoup(data)
 
-print(soup.prettify())
-
+items = soup.find_all("item")
+print(items)
 
 
