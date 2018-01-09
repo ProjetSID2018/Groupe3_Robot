@@ -34,20 +34,26 @@ for item in items:
     req = requests.get(url)
     data = req.text
     soup=BeautifulSoup(data,"html.parser")
-
     article=soup.find("article",id="main-content")
+
+    # Titre de l'article
     title=article.find("header").find("h1").get_text()
     # tableau vide quand il y'a pas d'autheur sinon tableau de(s) auteur(s)
     authors= [] if article.find("header").find("p",class_="authorsign-label")==None else unidecode(article.find("header").find("p",class_="authorsign-label").get_text()).split(" et ")
+    # Date de publication de l'article
     date_pub=article.find("header").find("time").get("datetime")
+    # Theme de l'article
     theme=article.find("ol",class_="breadcrumb-list").find_all("li")[1].find("span").get_text()
+    # Contenu de l'article
     content=""
     for p in article.find("div",class_=["lt-endor-body", "content"]).find_all("p"):
         content=content+p.get_text()
 
     regex = re.compile(r'[\n\r\t]')
+    # Elever les \n \r \t du contenu
     content = regex.sub("", content)
-    # le journal
+
+    # Nom du journal
     newspaper=soup.find("footer").find(has_copyright).find("a").get_text()
 
     # Date courrent
