@@ -8,25 +8,43 @@ import re
 
 fileTarget = "C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/"
 
-url_rss_figaro_une = "http://www.lefigaro.fr/rss/figaro_actualites.xml";
+url_rss_figaro = "http://www.lefigaro.fr/rss/"
 
-req = requests.get(url_rss_figaro_une)
+req = requests.get(url_rss_figaro)
 data = req.text
 soup = BeautifulSoup(data, "lxml")
-items = soup.find_all("item")
-article_figaro = []
-for item in items:
-    article_figaro.append(re.search(r"<link/>(.*)", str(item))[1])
 
-fichier_json=[]
-for article in article_figaro:
+items = soup.find_all("item")
+links_themes_figaro = []
+for span in soup.find_all("span"):
+    if span.get("class") == ['boite2']:
+        links_themes_figaro.append(span.find('a')['href'])
+    
+for link_theme in links_themes_figaro:
+    url_rss_figaro_theme = link_theme;
+    
+    theme = re.search("http://www.lefigaro.fr/rss/figaro_(.*).xml", link_theme)[1]
+    
+    req = requests.get(url_rss_figaro_theme)
+    data = req.text
+    soup = BeautifulSoup(data, "lxml")
+    
+    
+    
+    items = soup.find_all("item")
+    article_figaro = []
+    for item in items:
+    article_figaro.append(re.search(r"<link/>(.*)", str(item))[1])
+    
+    fichier_json=[]
+    for article in article_figaro:
     req = requests.get(article)
     data = req.text
-
+    
     soup = BeautifulSoup(data, "lxml")
-
+    
     titre = soup.title.string
-   
+       
     auteur = []
     
     for a in soup.find_all('a'):
@@ -40,7 +58,7 @@ for article in article_figaro:
             date_p = valeur.group(0)
     
     contenu = ""
-
+    
     for p in soup.find_all('p'):
         if p.get("class") == ['fig-content__chapo']:
             contenu = p.get_text() + " "
@@ -49,28 +67,29 @@ for article in article_figaro:
         if div.get("class") == ['fig-content__body']:
             for p in div.find_all('p'):
                 contenu += p.get_text() + " "
-
+    
     new_article = {
             "title" : titre,
             "newspaper" : 'Le Figaro.fr',
             "author" : auteur,
             "date_publi" : date_p,
-            "content" : contenu
+            "content" : contenu,
+            "theme" : theme
     }
     
     fichier_json.append(new_article)
     
-print(fichier_json)
-
-sources = "LeFigaro/"
-cur_date = date.datetime.now().date()
-
-if not os.path.exists(fileTarget+sources):
+    print(fichier_json)
+    
+    sources = "LeFigaro/"
+    cur_date = date.datetime.now().date()
+    
+    if not os.path.exists(fileTarget+sources):
     os.makedirs(fileTarget+sources)
-
-i = 1
-for article in fichier_json:
-    file_art = fileTarget + sources + "artJT"+ str(i) + str(cur_date) + "_robot.json"
+    
+    i = 1
+    for article in fichier_json:
+    file_art = fileTarget + sources + "artlfi"+ str(i) + str(cur_date) + "_robot.json"
     with open(file_art, "w", encoding="UTF-8") as fic:
         json.dump(article, fic, ensure_ascii=False)
     i += 1
