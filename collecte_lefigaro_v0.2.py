@@ -6,11 +6,11 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-fileTarget = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
+fileTarget = "C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/"
 
-url_rss_figaro = "http://www.lefigaro.fr/rss/figaro_actualites.xml";
+url_rss_figaro_une = "http://www.lefigaro.fr/rss/figaro_actualites.xml";
 
-req = requests.get(url_rss_figaro)
+req = requests.get(url_rss_figaro_une)
 data = req.text
 soup = BeautifulSoup(data, "lxml")
 items = soup.find_all("item")
@@ -25,24 +25,34 @@ for article in article_figaro:
 
     soup = BeautifulSoup(data, "lxml")
 
-    balise_title = soup.title.string
-    sep = balise_title.split("—")
-    titre = sep[0]
-    journal = sep[1]
-
-    for title in soup.find_all('h1'):
-        if title.get("class") == ['fig-main-title']:
-            titre = title.string
+    titre = soup.title.string
    
-    contenu = ""            
+    auteur = []
+    
+    for a in soup.find_all('a'):
+        if a.get("class") == ['fig-content-metas__author']:
+            auteur.append(re.sub("\s\s+", "", a.get_text()))
+    
+    date_publi = ""
+    
+    for time in soup.find_all('time'):
+        for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
+            date_p = valeur.group(0)
+    
+    contenu = ""
+
+    for p in soup.find_all('p'):
+        if p.get("class") == ['fig-content__chapo']:
+            contenu = p.get_text() + " "
+            
     for div in soup.find_all('div'):
-        if div.get("class") == ['content']:
+        if div.get("class") == ['fig-content__body']:
             for p in div.find_all('p'):
                 contenu += p.get_text() + " "
 
     new_article = {
             "title" : titre,
-            "newspaper" : journal,
+            "newspaper" : 'Le Figaro.fr',
             "author" : auteur,
             "date_publi" : date_p,
             "content" : contenu
