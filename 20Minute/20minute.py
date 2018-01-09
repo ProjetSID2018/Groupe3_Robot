@@ -45,7 +45,8 @@ for item in items:
     for p in article.find("div",class_=["lt-endor-body", "content"]).find_all("p"):
         content=content+p.get_text()
 
-    content=str(content)[2:]
+    regex = re.compile(r'[\n\r\t]')
+    content = regex.sub("", content)
     # le journal
     newspaper=soup.find("footer").find(has_copyright).find("a").get_text()
 
