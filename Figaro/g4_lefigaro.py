@@ -1,3 +1,6 @@
+#Authors : Noemie DELOEUVRE, Morgan SEGUELA, Aurelien PELAT
+#Version : 1.3
+
 import os
 import lxml.html as lh
 import json
@@ -6,14 +9,17 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-fileTarget = "C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/"
+fileTarget = "A ADAPTER AU SERVEUR"
 
+#Adresse url du flux RSS du figaro
 url_rss_figaro = "http://www.lefigaro.fr/rss/"
 
+#Parsing de la page RSS avec Beautiful Soup
 req = requests.get(url_rss_figaro)
 data = req.text
 soup = BeautifulSoup(data, "lxml")
 
+#Creation de la liste des themes disponibles (excepte videos et photographies)
 items = soup.find_all("item")
 links_themes_figaro = []
 for span in soup.find_all("span"):
@@ -23,57 +29,63 @@ for span in soup.find_all("span"):
         and "http://www.lefigaro.fr/rss/figaro_photos.xml" != span.find('a')['href']): 
             links_themes_figaro.append(span.find('a')['href'])
 
-i = 1
+
+numero_article = 1
+#Parcours des themes
 for link_theme in links_themes_figaro:
     url_rss_figaro_theme = link_theme;
     
+    #Recuperation du theme
     theme = re.search("http://www.lefigaro.fr/rss/figaro_(.*).xml", link_theme)[1]
-    #à supprimer, juste pour voir l'avancement
-    print(theme)
+    
+    #Parsing de la page du theme avec Beautiful Soup
     req = requests.get(url_rss_figaro_theme)
     data = req.text
     soup = BeautifulSoup(data, "lxml")
     
     
-    
+    #Creation de la liste d articles du theme
     items = soup.find_all("item")
-    article_figaro = []
+    articles_temp = []
     for item in items:
-        article_figaro.append(re.search(r"<link/>(.*)", str(item))[1])
+        articles_temp.append(re.search(r"<link/>(.*)", str(item))[1])
     
-    #Supprimer les lien d'articles vides dû au codage maladroit du site
+    #Supprimer les lien d'articles du theme vides (codage maladroit du site)
     articles_figaro = []
-    for article in article_figaro:
+    for article in articles_temp:
         if article != '':
             articles_figaro.append(article)
     
+    #Creation de la liste des articles du theme
     fichier_json=[]
+    #Parcours des articles du theme
     for article in articles_figaro:
+        
+        #Parsing de l article avec Beautiful Soup
         req = requests.get(article)
         data = req.text
-    
         soup = BeautifulSoup(data, "lxml")
-    
-        titre = soup.title.string
-           
-        auteur = []
         
+        #Recuperation du titre
+        titre = soup.title.string
+        
+        #Recuperation de la liste des auteurs de l article
+        auteur = []
         for a in soup.find_all('a'):
             if a.get("class") == ['fig-content-metas__author']:
                 auteur.append(re.sub("\s\s+", "", a.get_text()))
         
-        date_publi = ""
-        
+        #Recuperation de la date de publication de l article
+        date_p = ""
         for time in soup.find_all('time'):
             for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
                 date_p = valeur.group(0)
         
+        #Recuperation du contenu de l article
         contenu = ""
-        
         for p in soup.find_all('p'):
             if p.get("class") == ['fig-content__chapo']:
-                contenu = p.get_text() + " "
-                
+                contenu = p.get_text() + " "       
         for div in soup.find_all('div'):
             if div.get("class") == ['fig-content__body']:
                 for p in div.find_all('p'):
@@ -88,16 +100,19 @@ for link_theme in links_themes_figaro:
                 "theme" : theme
         }
         
+        #Ajout de l article a la liste d articles
         fichier_json.append(new_article)
-        
+    
+    #Creation du dossier contenant les articles
     sources = "LeFigaro/"
     cur_date = date.datetime.now().date()
     
     if not os.path.exists(fileTarget+sources):
         os.makedirs(fileTarget+sources)
     
+    #Creation du fichier article et ajout dans le dossier
     for article in fichier_json:
         file_art = fileTarget + sources + "artlfi"+ str(i) + str(cur_date) + "_robot.json"
         with open(file_art, "w", encoding="UTF-8") as fic:
             json.dump(article, fic, ensure_ascii=False)
-        i += 1
+        numero_article += 1
