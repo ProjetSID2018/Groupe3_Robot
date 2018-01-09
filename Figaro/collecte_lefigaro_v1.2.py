@@ -19,7 +19,8 @@ links_themes_figaro = []
 for span in soup.find_all("span"):
     if span.get("class") == ['boite2']:
         if ("http://www.lefigaro.fr/rss/figaro_" in span.find('a')['href']
-        and "http://www.lefigaro.fr/rss/figaro_videos.xml" != span.find('a')['href']): 
+        and "http://www.lefigaro.fr/rss/figaro_videos.xml" != span.find('a')['href']
+        and "http://www.lefigaro.fr/rss/figaro_photos.xml" != span.find('a')['href']): 
             links_themes_figaro.append(span.find('a')['href'])
 
 i = 1
