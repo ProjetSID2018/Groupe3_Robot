@@ -48,6 +48,7 @@ for newspaper in newspapers:
             newformat["author"] = "La rédaction"
         newformat["date_publi"] = data["date"]
         newformat["content"] = data["body"]
+        newformat["theme"] = data["theme"]
         with open(article_path_target, "w", encoding="utf-8") as fw:
             json.dump(newformat, fw, ensure_ascii=False)
 
