@@ -2,13 +2,11 @@
 #Version : 1.0
 
 import os
-import lxml.html as lh
 import json
 import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import datetime
 import http.client
 from urllib.parse import urlparse
 
@@ -56,10 +54,10 @@ def collect_articles(fichier_json, url_lepoint_theme):
         dates = []
         for time in soup.find_all('time'):
             for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
-                dates.append(datetime.datetime.strptime(valeur.group(0), '%d/%m/%Y'))
+                dates.append(date.datetime.strptime(valeur.group(0), '%d/%m/%Y'))
 
         #Recuperation de la date de publication de l article
-        date_p = datetime.datetime.strftime(min(dates), '%d/%m/%Y')
+        date_p = date.datetime.strftime(min(dates), '%d/%m/%Y')
         
         #Recuperation du contenu de l article
         contenu = ""

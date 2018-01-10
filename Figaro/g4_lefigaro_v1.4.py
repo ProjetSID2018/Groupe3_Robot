@@ -1,10 +1,6 @@
 #Authors : Noemie DELOEUVRE, Morgan SEGUELA, Aurelien PELAT
 #Version : 1.4
 
-import os
-import lxml.html as lh
-import json
-import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
