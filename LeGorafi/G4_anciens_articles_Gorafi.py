@@ -1,5 +1,5 @@
-# Groupe 4
-# Réalisé par BENJEBRIA Sofian, DELOEUVRE Noémie, SEGUELA Morgan
+# Group 4
+# Realized by BENJEBRIA Sofian, DELOEUVRE Noémie
 
 import os
 import json
@@ -8,20 +8,22 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-# Chemin à modifier : cible où l'on va stocker les fichier json
-fileTarget = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
+# Path to modify : target where we will store the json files
+file_target="C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/" + str(date.datetime.now().date()) +"/"
+#file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
+os.makedirs(file_target, exist_ok=True)
 
 list_category = ["france/politique", "france/societe", "monde-libre",
                  "france/economie", "culture", "people", "sports", "hi-tech",
                  "sciences", "ledito"]
 
-# On parcours tous les thèmes du site Le Gorafi et pour chaque thème on
-# récupère les articles de 6 pages (120 articles par thème).
+# We go through all the themes of the Gorafi website and for each theme
+# we get the articles of 6 pages (120 articles per theme)
  
 file_json = []
 for cat in list_category:
-    # On récupère les flux URL pour chaque page d'article.
-    # Chaque article codé en HTML est analysé avec beautiful soup.
+    # We retrieve the URL feeds for each page of article
+    # Each HTML-coded article is analyzed with beautiful soup
     for i in range(2, 8):
         url_rss_gorafi = "http://www.legorafi.fr/category/" + cat + "/page/" + str(i) + "/feed/"
         req = requests.get(url_rss_gorafi)
@@ -30,11 +32,11 @@ for cat in list_category:
         items = soup.find_all("item")
         article_gorafi = []
 
-        # On récupère tous les articles pour une page donnée
+        # We retrieve all the articles for a given page
         for item in items:
             article_gorafi.append(re.search(r"<link/>(.*)", str(item))[1])
 
-        # Récupération des variables nécessaires à la création du fichier json
+        # Retrieving variables needed to create the json file
         for article in article_gorafi:
             req = requests.get(article)
             data = req.text
@@ -45,21 +47,21 @@ for cat in list_category:
             newspaper = sep[1]
             author = []
 
-            # Récupération de l'auteur et de la date de publication
+            # Retrieving of author and publication date
             for span in soup.find_all('span'):
                 if span.get("class") == ['context']:
                     author.append(span.a.get_text())
                     for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(span)):
                         date_p = valeur.group(0)
 
-            # Récupération du thème
+            # Retrieving the theme
             for ul in soup.find_all('ul'):
                 if ul.get("class") == ['post-categories']:
                     for li in ul.find_all('li'):
                         theme = li.get_text()
             contents = ""
 
-            # Récupération du contenu de l'article
+            # Retrieving the content of the article
             for div in soup.find_all('div'):
                 if div.get("class") == ['content']:
                     for p in div.find_all('p'):
@@ -81,11 +83,5 @@ cur_date = date.datetime.now().date()
 if not os.path.exists(fileTarget+sources):
     os.makedirs(fileTarget+sources)
 
-i = 1
-# Chaque article est exporté en format json et nommé de la forme suivante :
-# art_lg_numero_datejour_robot.json
-for article in file_json:
-    file_art = fileTarget + sources + "art_lg_" + str(i) + "_" + str(cur_date) + "_robot.json"
-    with open(file_art, "w", encoding="UTF-8") as fic:
-        json.dump(article, fic, ensure_ascii=False)
-    i += 1
+# Call the create_json function
+create_json(file_target, file_json, sources, "lg")
