@@ -1,5 +1,5 @@
 #Authors : Noemie DELOEUVRE, Morgan SEGUELA, Aurelien PELAT
-#Version : 0.1
+#Version : 1.0
 
 import os
 import lxml.html as lh
@@ -10,7 +10,7 @@ import requests
 import re
 import datetime
 
-fileTarget = "C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/"
+fileTarget = "/var/www/html/projet2018"
 
 #Adresse url du flux RSS du figaro
 url_rss_lepoint = "http://www.lepoint.fr/rss/"
@@ -24,7 +24,7 @@ soup = BeautifulSoup(data, "lxml")
 links_themes_lepoint = []
 for a in soup.find_all("a"):
     if ("http://www.lepoint.fr/" in a.get("href")[0:22]
-    and a.get("href") not in "http://www.lepoint.fr/content/system/rss/24H/24H_doc.xml"):
+    and a.get("href") != "http://www.lepoint.fr/content/system/rss/24H/24H_doc.xml"):
         links_themes_lepoint.append(a.get("href"))
 
 
@@ -80,12 +80,16 @@ for link_theme in links_themes_lepoint:
         for time in soup.find_all('time'):
             for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
                 dates.append(datetime.datetime.strptime(valeur.group(0), '%d/%m/%Y'))
-                
+        
         #Recuperation de la date de publication de l article
         date_p = datetime.datetime.strftime(min(dates), '%d/%m/%Y')
         
         #Recuperation du contenu de l article
         contenu = ""
+        for h2 in soup.find_all('h2'):
+            if h2.get('class') == ['art-chapeau']:
+                contenu += h2.get_text()+" "
+        
         for div in soup.find_all('div'):
             if div.get('class') == ['art-text']:
                 for p in div.find_all('p'):

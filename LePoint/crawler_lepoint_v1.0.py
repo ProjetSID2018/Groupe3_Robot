@@ -96,7 +96,7 @@ def checkUrl(url):
     resp = conn.getresponse()
     return resp.status < 400
 
-fileTarget = 'C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/'
+fileTarget = '/var/www/html/projet2018'
 
 #Adresse url Le Point
 url_lepoint = 'http://www.lepoint.fr/'
