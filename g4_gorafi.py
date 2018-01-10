@@ -9,8 +9,7 @@ import re
 from G4_create_json import create_json
 
 # Path to change : target where we will store the json files
-file_target="/Users/Sofian/Documents/Robot/" + str(date.datetime.now().date()) +"/"
-#file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
+file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
 os.makedirs(file_target, exist_ok=True)
 
 url_rss_gorafi = "http://www.legorafi.fr/feed/"
