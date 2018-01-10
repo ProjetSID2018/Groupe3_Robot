@@ -95,8 +95,6 @@ for url in liste_url:
         }]
         file_json.append(new_article)
 
-print(file_json)
-
 sources = "NouvelObs_nouveaux/"
 cur_date = date.datetime.now().date()
 
