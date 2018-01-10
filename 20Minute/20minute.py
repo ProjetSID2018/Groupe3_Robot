@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+import sys
 import json
 import datetime as date
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 import requests
 import re
+sys.path.append('~/./G4_create_json')
 
 # Verifier si le tag contient le texte Copyright
 def has_copyright(tag):

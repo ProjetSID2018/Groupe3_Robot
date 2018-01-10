@@ -7,6 +7,7 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
+import utils
 
 # Path to modify : target where we will store the json files
 file_target="C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/" + str(date.datetime.now().date()) +"/"
@@ -78,10 +79,6 @@ for cat in list_category:
             file_json.append(new_article)
 
 sources = "LeGorafi_articles/"
-cur_date = date.datetime.now().date()
-
-if not os.path.exists(fileTarget+sources):
-    os.makedirs(fileTarget+sources)
 
 # Call the create_json function
-create_json(file_target, file_json, sources, "lg")
+utils.create_json(file_target, file_json, sources, "lg")

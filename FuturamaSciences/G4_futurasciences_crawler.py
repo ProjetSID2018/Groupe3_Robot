@@ -8,8 +8,7 @@ import bs4
 import requests
 import unidecode
 import re
-import G4_create_json
-
+import utils
 
 fileTarget = "C:/"
 
@@ -85,5 +84,7 @@ for article in articles:
     }]
     jsons.append(new_article)
 
+sources = "FuturaSciences/"
+
 # creation of the file
-G4_create_json.create_json("C:/", jsons, "FuturaSciences/", "fusc")
+utils.create_json("C:/", jsons, sources, "fusc")

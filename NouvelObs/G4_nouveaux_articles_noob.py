@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from datetime import datetime
-from G4_create_json import create_json
+import utils
 
 # Path to modify : target where we will store the json files
 fileTarget = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
@@ -102,4 +102,4 @@ if not os.path.exists(fileTarget+sources):
     os.makedirs(fileTarget+sources)
 
 # Call the create_json function
-create_json(fileTarget, file_json, sources, "noob")
+utils.create_json(fileTarget, file_json, sources, "noob")

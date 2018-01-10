@@ -8,8 +8,9 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
+import utils
 
-fileTarget = "A ADAPTER AU SERVEUR"
+file_target = "A ADAPTER AU SERVEUR"
 
 #Adresse url du flux RSS du figaro
 url_rss_figaro = "http://www.lefigaro.fr/rss/"
@@ -103,16 +104,7 @@ for link_theme in links_themes_figaro:
         #Ajout de l article a la liste d articles
         fichier_json.append(new_article)
     
-    #Creation du dossier contenant les articles
-    sources = "LeFigaro/"
-    cur_date = date.datetime.now().date()
-    
-    if not os.path.exists(fileTarget+sources):
-        os.makedirs(fileTarget+sources)
-    
-    #Creation du fichier article et ajout dans le dossier
-    for article in fichier_json:
-        file_art = fileTarget + sources + "artlfi"+ str(numero_article) + str(cur_date) + "_robot.json"
-        with open(file_art, "w", encoding="UTF-8") as fic:
-            json.dump(article, fic, ensure_ascii=False)
-        numero_article += 1
+sources = "leFigaro/"
+
+# Call the create_json function
+utils.create_json(file_target, fichier_json, sources, "lg")

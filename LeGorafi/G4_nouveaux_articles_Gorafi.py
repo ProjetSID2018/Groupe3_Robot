@@ -6,7 +6,7 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-from G4_create_json import create_json
+import utils
 
 # Path to change : target where we will store the json files
 file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
@@ -72,12 +72,6 @@ for article in article_gorafi:
         file_json.append(new_article)
 
 sources = "legorafi/"
-cur_date = date.datetime.now().date()
-
-if not os.path.exists(file_target+sources):
-    os.makedirs(file_target+sources)
-
 
 # Call the create_json function
-create_json(file_target, file_json, sources, "lg")
-
+utils.create_json(file_target, file_json, sources, "lg")
