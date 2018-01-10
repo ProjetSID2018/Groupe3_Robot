@@ -1,5 +1,5 @@
 #Authors : Noemie DELOEUVRE, Morgan SEGUELA, Aurelien PELAT
-#Version : 1.3
+#Version : 1.4
 
 import os
 import lxml.html as lh
@@ -112,7 +112,7 @@ for link_theme in links_themes_figaro:
     
     #Creation du fichier article et ajout dans le dossier
     for article in fichier_json:
-        file_art = fileTarget + sources + "artlfi"+ str(i) + str(cur_date) + "_robot.json"
+        file_art = fileTarget + sources + "artlfi"+ str(numero_article) + str(cur_date) + "_robot.json"
         with open(file_art, "w", encoding="UTF-8") as fic:
             json.dump(article, fic, ensure_ascii=False)
         numero_article += 1
