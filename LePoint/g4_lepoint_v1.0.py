@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Authors : Noemie DELOEUVRE, Morgan SEGUELA, Aurelien PELAT
 # Version : 0.1
 

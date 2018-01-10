@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Group 4
 # Realized by BENJEBRIA Sofian, DELOEUVRE Noémie
 

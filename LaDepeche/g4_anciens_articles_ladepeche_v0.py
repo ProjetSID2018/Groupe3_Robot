@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Group 4 Robot - Lea Besnard, Laetitia Krumeich, Noémie Deloeuvre,
 # Sofian Benjebria, Morgan Seguela
 

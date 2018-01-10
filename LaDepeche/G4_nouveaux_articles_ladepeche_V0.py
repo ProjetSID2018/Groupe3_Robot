@@ -1,11 +1,11 @@
-# Group 4 Robot - Lea BESNARD, Laetitia KRUMEICH, Sofian BENJEBRIA, Noémie DELOEUVRE , Morgan SEGUELA 
+# -*- coding: utf-8 -*-
+# Group 4 Robot - Lea BESNARD, Laetitia KRUMEICH, Sofian BENJEBRIA,
+# Noémie DELOEUVRE , Morgan SEGUELA
 
-import os
-import json
-import datetime as dat
 from bs4 import BeautifulSoup
 import requests
 import re
+import g4_utils_v2
 
 fileTarget = "C:/Users/lea/Desktop/PROJET/"
 rss = requests.get("https://www.ladepeche.fr/services/flux-rss/")
@@ -45,7 +45,8 @@ for link in soup.find_all("a"):
             for time in soup.find_all('time'):
                 if time.get("itemprop") == 'datePublished':
                     date = time.get("itemprop")
-                    for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
+                    for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
+                                              str(time)):
                         date = valeur.group(0)
 
             # Retrieve the author
@@ -59,7 +60,7 @@ for link in soup.find_all("a"):
             for div in soup.find_all('div'):
                 if div.get("itemprop") == 'articleBody':
                     for p in div.find_all('p'):
-                       content += p.get_text() + " "
+                        content += p.get_text() + " "
 
             # Retrieve the theme
             theme = ""
@@ -79,15 +80,7 @@ for link in soup.find_all("a"):
             # add each new article in the "file_json" table
             file_json.append(new_article)
 
-        sources = "Ladepeche_articles_nouveaux/"
-        cur_date = dat.datetime.now().date()
-        if not os.path.exists(fileTarget+sources):
-            os.makedirs(fileTarget+sources)
+sources = "Ladepeche_articles_nouveaux/"
 
-        # Each article is exported in json format and named in the following form:
-        # art_lg_numero_datejour_robot. json
-        for article in file_json:
-            file_art = fileTarget + sources + "art_lg_" + str(i) + "_" + str(cur_date) + "_robot.json"
-            with open(file_art, "w", encoding="UTF-8") as fic:
-                json.dump(article, fic, ensure_ascii=False)
-            i += 1
+g4_utils_v2.create_json("C:/Users/Laetitia/Desktop/Groupe4_Robot", file_json,
+                        "Ladepeche_articles_anciens/", "LD")

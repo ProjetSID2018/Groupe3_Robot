@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #Authors : Noemie DELOEUVRE, Morgan SEGUELA, Celine Mothes, Aurelien PELAT
 #Version : 1.0
 
