@@ -1,10 +1,11 @@
-# Group 4 Robot - Lea Besnard, Laetitia Krumeich, Noémie Deloeuvre, Sofian Benjebria, Morgan Seguela
+# Group 4 Robot - Lea Besnard, Laetitia Krumeich, Noémie Deloeuvre,
+# Sofian Benjebria, Morgan Seguela
 
-import G4_create_json
 from bs4 import BeautifulSoup
 import requests
 import re
 import unidecode
+import g4_utils_v2
 
 list_category = ["grand-sud", "actu", "faits-divers",
                  "economie", "sports", "sante", "tv-people", "sorties"]
@@ -45,7 +46,8 @@ for cat in list_category:
             # Retrieve the publication date
             for time in soup.find_all('time'):
                 if time.get("itemprop") == 'datePublished':
-                    for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
+                    for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
+                                              str(time)):
                         date = valeur.group(0)
 
             # Retrieve the author
@@ -59,7 +61,7 @@ for cat in list_category:
             for div in soup.find_all('div'):
                 if div.get("itemprop") == 'articleBody':
                     for p in div.find_all('p'):
-                       content += p.get_text() + " "
+                        content += p.get_text() + " "
             content = unidecode.unidecode(content)
 
             # Retrieve the theme
@@ -81,4 +83,5 @@ for cat in list_category:
             # add each new article in the "file_json" table
             file_json.append(new_article)
 
-G4_create_json.create_json("C:/Users/Laetitia/Desktop/Groupe4_Robot", file_json, "Ladepeche_articles_anciens/", "LD")
+g4_utils_v2.create_json("C:/Users/Laetitia/Desktop/Groupe4_Robot", file_json,
+                        "Ladepeche_articles_anciens/", "LD")
