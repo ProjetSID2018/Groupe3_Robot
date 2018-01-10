@@ -7,7 +7,6 @@ import bs4
 import requests
 import unidecode
 import re
-# TODO: appeler la fonction create_json après Merge dans la branche Master
 import G4_create_json
 
 
