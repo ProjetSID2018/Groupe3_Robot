@@ -1,4 +1,5 @@
-﻿# Groupe 10
+﻿# -*- coding: utf-8 -*-
+# Group 4
 # MOTHES Céline
 # HERVE Pierrick
 # V1
@@ -12,31 +13,33 @@ import G4_create_json
 
 fileTarget = "C:/"
 
-url_rss_gorafi = "https://www.futura-sciences.com"
+# we get the data from website
+url_rss_futurasciences = "https://www.futura-sciences.com"
 rss_url = "https://www.futura-sciences.com/flux-rss/"
 req = requests.get(rss_url)
 data = req.text
 soup = bs4.BeautifulSoup(data, "lxml")
 
+# we find new articles
 articles = []
 for link in soup.find_all("a"):
     if link.get("class") == ["first-capitalize"]:
         articles.append(link.get("href"))
 
+# table of JSON objects
 jsons = []
 
 for article in articles:
-    # la réponse (200_OK si tout va bien)
-    req = requests.get(url_rss_gorafi+article)
-    # le html de réponse
+    # the response (200_OK if everything is ok)
+    req = requests.get(url_rss_futurasciences+article)
+    # we get the body of the response
     data = req.text
-    # objet de type BeautifulSoup
+    # a BeautifulSoup object
     soup = bs4.BeautifulSoup(data, "lxml")
-    # on indente
+    # we indent
     prettyHTML = soup.prettify()
 
-
-    # récupération titre
+    # we get the title
     title = soup.title.string
     indice = title.find('|')
     if indice != -1:
@@ -44,34 +47,34 @@ for article in articles:
     else:
         title = soup.title.string
 
-    # récupération du journal
+    # we get the newspaper name
     newspaper = 'FuturaSciences'
-    
-    # récupération de l'auteur
+
+    # we get the author
     author = []
     for h3 in soup.find_all('h3'):
         if h3.get('itemprop') == 'author':
             author.append(h3.get_text())
 
-    # récupération de la date de publication
+    # we get the publication date
     publi_date = soup.time.string[11:]
-    
+
     content = ''
     for p in soup.find_all('p'):
         for p2 in re.finditer('py0p5', p.get('class')[-1]):
             content += p.get_text()
-    # traduction en utf-8
+    # we traduce in utf-8
     content = unidecode.unidecode(content)
-    
-    # récupération du theme
+
+    # we get the theme
     theme = ''
     for meta in soup.find_all('meta'):
         if meta.get('property') == 'og:url':
             tmp = meta.get('content')[32:]
             indice = tmp.find('/')
             theme = tmp[:indice]
-        
-    # création du json
+
+    # creation of the JSON object
     new_article = [{
         "title": title,
         "newspaper": newspaper,
@@ -82,5 +85,5 @@ for article in articles:
     }]
     jsons.append(new_article)
 
-
+# creation of the file
 G4_create_json.create_json("C:/", jsons, "FuturaSciences/", "fusc")

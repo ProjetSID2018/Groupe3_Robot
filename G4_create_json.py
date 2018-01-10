@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # Groupe 4
-# Céline MOTHES, Morgan SEGUELA
+# DELOEUVRE Noémie
+# Céline MOTHES
+# Morgan SEGUELA
+
 import os
 import json
 import datetime as date
