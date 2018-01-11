@@ -23,12 +23,10 @@ for a in soup.find_all("a"):
 
 numero_article = 1
 for link_theme in links_themes:
-    print(numero_article)
+    
     theme = re.search("http://www.lefigaro.fr/(.*)", link_theme)[1]
     theme = re.sub("/", "", theme)
-    print("---------------------------------"+theme+"--------------------------------")
-    
-    
+   
     req = requests.get(link_theme)
     data = req.text
     soup = BeautifulSoup(data, "lxml")
@@ -39,64 +37,62 @@ for link_theme in links_themes:
         and "http://www.lefigaro.fr/" in a.get('href')):
             links_sous_themes.append(a.get('href'))
     
+    url_articles = []
     for link_sous_theme in links_sous_themes:
-        
-        print("~~~~~~~"+link_sous_theme+"~~~~~~~~")
+
         
         req = requests.get(link_sous_theme)
         data = req.text
         soup = BeautifulSoup(data, "lxml")
 
         items = soup.find_all("item")
-        articles_figaro = []
+        
         for h2 in soup.find_all('h2'):
             if (h2.get('class') == ['fig-profile__headline']
             or h2.get('class') == ['fig-profile-headline']):
-                articles_figaro.append(h2.a.get('href'))
+                url_articles.append(h2.a.get('href'))
+                
+    list_dictionnaires = []    
+    for url_article in url_articles:
+        req = requests.get(url_article)
+        data = req.text
+    
+        soup = BeautifulSoup(data, "lxml")
+    
+        titre = soup.title.string
+           
+        auteur = []
         
-        fichier_json=[]
-        for article in articles_figaro:
-            req = requests.get(article)
-            data = req.text
+        for a in soup.find_all('a'):
+            if a.get("class") == ['fig-content-metas__author']:
+                auteur.append(re.sub("\s\s+", "", a.get_text()))
         
-            soup = BeautifulSoup(data, "lxml")
+        date_publi = ""
         
-            titre = soup.title.string
-            print(titre)
-               
-            auteur = []
-            
-            for a in soup.find_all('a'):
-                if a.get("class") == ['fig-content-metas__author']:
-                    auteur.append(re.sub("\s\s+", "", a.get_text()))
-            
-            date_publi = ""
-            
-            for time in soup.find_all('time'):
-                for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
-                    date_p = valeur.group(0)
-            
-            contenu = ""
-            
-            for p in soup.find_all('p'):
-                if p.get("class") == ['fig-content__chapo']:
-                    contenu = p.get_text() + " "
-                    
-            for div in soup.find_all('div'):
-                if div.get("class") == ['fig-content__body']:
-                    for p in div.find_all('p'):
-                        contenu += p.get_text() + " "
-            
-            new_article = {
-                    "title" : titre,
-                    "newspaper" : 'Le Figaro.fr',
-                    "author" : auteur,
-                    "date_publi" : date_p,
-                    "content" : contenu,
-                    "theme" : theme
-            }
+        for time in soup.find_all('time'):
+            for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(time)):
+                date_p = valeur.group(0)
+        
+        contenu = ""
+        
+        for p in soup.find_all('p'):
+            if p.get("class") == ['fig-content__chapo']:
+                contenu = p.get_text() + " "
+                
+        for div in soup.find_all('div'):
+            if div.get("class") == ['fig-content__body']:
+                for p in div.find_all('p'):
+                    contenu += p.get_text() + " "
+        
+        new_article = {
+                "title" : titre,
+                "newspaper" : 'Le Figaro.fr',
+                "author" : auteur,
+                "date_publi" : date_p,
+                "content" : contenu,
+                "theme" : theme
+        }
 
-            fichier_json.append(new_article)
+        list_dictionnaires.append(new_article)
         
-        
-        utils.create_json(file_target, fichier_json, 'LeFigaroExistant/', 'lfi')
+        utils.create_json(file_target, list_dictionnaires, 'LeFigaroExistant/', 'lfi')
