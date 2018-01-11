@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
 # Group 4
 # Realized by BENJEBRIA Sofian, DELOEUVRE Noémie
 
+import os
+import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
 from datetime import datetime
-import g4_utils_v2
-import date
+from G4_create_json import create_json
 
 # Path to modify : target where we will store the json files
 fileTarget = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
@@ -54,11 +54,9 @@ for url in liste_url:
         # Retrieval of publication date
         for time in soup_article.find_all('time'):
             if time.get("class") == ['date']:
-                for valeur in re.finditer('[0-9]{4}\/[0-9]{2}\/[0-9]{2}',
-                                          str(time)):
+                for valeur in re.finditer('[0-9]{4}\/[0-9]{2}\/[0-9]{2}', str(time)):
                     date_p = valeur.group(0)
-                    date_p = datetime.strptime(date_p,
-                                               "%Y/%m/%d").strftime("%d/%m/%Y")
+                    date_p = datetime.strptime(date_p, "%Y/%m/%d").strftime("%d/%m/%Y")
 
         # Retrieval of the author of the article
         for div in soup_article.find_all('div'):
@@ -87,16 +85,21 @@ for url in liste_url:
                         p.string = ""
                     contents += p.get_text() + " "
 
-        new_article = [{
+        new_article = {
             "title": title,
             "newspaper": "Le Nouvel Observateur",
             "date_publi": date_p,
             "author": author,
             "theme": theme,
             "content": contents
-        }]
+        }
         file_json.append(new_article)
 
 sources = "NouvelObs_nouveaux/"
+cur_date = date.datetime.now().date()
+
+if not os.path.exists(fileTarget+sources):
+    os.makedirs(fileTarget+sources)
+
 # Call the create_json function
-g4_utils_v2.create_json(fileTarget, file_json, sources, "noob")
+create_json(fileTarget, file_json, sources, "noob")

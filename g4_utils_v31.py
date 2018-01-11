@@ -59,10 +59,11 @@ def already_exists(date_publi, text, newspaper):
         already_existing_hash = csv_reader.__next__()[:-1]
     return hash_text in already_existing_hash
 
-
+"""
 def create_index():
-    """Create the index for all the article saved
-    """
+    
+    Create the index for all the article saved
+    
     source = "data/clean/robot/"
 
     dates_extract = os.listdir(source)
@@ -88,7 +89,7 @@ def create_index():
 
     with open("hash_text.csv", "a") as f:
         f.write(",".join(hash_text)+",")
-
+"""
 
 # Entree:
 #   file_target: string containing the path of the folder
@@ -141,7 +142,7 @@ def recovery_article(title, newspaper, author, date_publi, content, theme):
                 "title": title,
                 "newspaper": newspaper,
                 "author": author,
-                "date_publi": date_publi,
+                "date_publi": date.datetime.strf(date.datetime.strptime(date_publi), '%Y-%m-%d'),
                 "content": content,
                 "theme": theme
         }
@@ -160,7 +161,8 @@ def recovery_flux_urss(url_rss):
     data = req.text
     return(bs4.BeautifulSoup(data, "lxml"))
 
-
+"""
 if __name__ == '__main__':
     create_index()
     print(already_exists("30092017dtrssdnglftntrjtllrgsprnbrvclvlbs"))
+"""
