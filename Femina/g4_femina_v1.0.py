@@ -1,6 +1,5 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Group 4
-# MOTHES Céline
 # HERVE Pierrick
 # V1
 
@@ -10,27 +9,27 @@ import unidecode
 import re
 import g4_utils_v2
 
+
 fileTarget = "C:/"
 
 # we get the data from website
-url_rss_futurasciences = "https://www.futura-sciences.com"
-rss_url = "https://www.futura-sciences.com/flux-rss/"
+url_rss_femina = "https://www.femina.com"
+rss_url = "http://feeds.feedburner.com/FeminaNews"
 req = requests.get(rss_url)
 data = req.text
 soup = bs4.BeautifulSoup(data, "lxml")
 
 # we find new articles
 articles = []
-for link in soup.find_all("a"):
-    if link.get("class") == ["first-capitalize"]:
-        articles.append(link.get("href"))
+for link in soup.find_all("comments"):
+    articles.append(link.string[:-10])
 
 # table of JSON objects
 jsons = []
 
 for article in articles:
     # the response (200_OK if everything is ok)
-    req = requests.get(url_rss_futurasciences+article)
+    req = requests.get(url_rss_femina+article)
     # we get the body of the response
     data = req.text
     # a BeautifulSoup object
@@ -40,36 +39,36 @@ for article in articles:
 
     # we get the title
     title = soup.title.string
-    indice = title.find('|')
-    if indice != -1:
-        title = title[:indice-1]
-    else:
-        title = soup.title.string
 
     # we get the newspaper name
-    newspaper = 'FuturaSciences'
+    newspaper = 'Femina'
 
     # we get the author
     author = []
-    for h3 in soup.find_all('h3'):
-        if h3.get('itemprop') == 'author':
-            author.append(h3.get_text())
+    for meta in soup.find_all('meta'):
+        if meta.get('property') == 'article:author':
+            author.append(meta.get('content'))
 
     # we get the publication date
-    publi_date = soup.time.string[11:]
+    for div in soup.find_all('div'):
+        if div.get("class") == ['infos']:
+            # TODO: mettre la date au format jj/mm/aaaa
+            for valeur in re.finditer('[0-9]{4}-[0-9]{2}-[0-9]{2}',
+                                      str(div.get('datetime'))):
+                publi_date = div.get('datetime')
 
+    # récupération du contenu
     content = ''
     for p in soup.find_all('p'):
-        for p2 in re.finditer('py0p5', p.get('class')[-1]):
-            content += p.get_text()
+        content += p.get_text()
     # we traduce in utf-8
     content = unidecode.unidecode(content)
 
-    # we get the theme
+    # récupération du theme
     theme = ''
     for meta in soup.find_all('meta'):
         if meta.get('property') == 'og:url':
-            tmp = meta.get('content')[32:]
+            tmp = meta.get('content')[21:]
             indice = tmp.find('/')
             theme = tmp[:indice]
 
@@ -83,8 +82,8 @@ for article in articles:
         "theme": theme
     }]
     jsons.append(new_article)
+    print(len(jsons))
 
-sources = "FuturaSciences/"
 
 # creation of the file
-g4_utils_v2.create_json("C:/", jsons, sources, "fusc")
+g4_utils_v2.create_json("C:/", jsons, "Femina/", "fem")

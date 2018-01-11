@@ -1,13 +1,13 @@
+# -*- coding: utf-8 -*-
 # Group 4
 # Realized by BENJEBRIA Sofian, DELOEUVRE Noémie
 
-import os
-import datetime as date
+from datetime import datetime
 from bs4 import BeautifulSoup
 import requests
 import re
-from datetime import datetime
-from G4_create_json import create_json
+import g4_utils_v2
+import date
 
 # Path to modify : target where we will store the json files
 fileTarget = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
@@ -23,7 +23,8 @@ for cat in list_category:
     # We retrieve the URL feeds for each page of article
     # Each HTML-coded article is analyzed with beautiful soup
     for i in range(2, 10):
-        url_rss_noob = "http://www.nouvelobs.com/" + cat + "/page-" + str(i) + ".html"
+        url_rss_noob = "http://www.nouvelobs.com/" + cat + "/page-" + str(i)
+        + ".html"
 
         req = requests.get(url_rss_noob)
         data = req.text
@@ -51,9 +52,11 @@ for cat in list_category:
             # Retrieval of publication date
             for time in soup_article.find_all('time'):
                 if time.get("class") == ['date']:
-                    for valeur in re.finditer('[0-9]{4}\/[0-9]{2}\/[0-9]{2}', str(time)):
+                    for valeur in re.finditer('[0-9]{4}\/[0-9]{2}\/[0-9]{2}',
+                                              str(time)):
                         date_p = valeur.group(0)
-                        date_p = datetime.strptime(date_p, "%Y/%m/%d").strftime("%d/%m/%Y")
+                        date_p = datetime\
+                            .strptime(date_p, "%Y/%m/%d").strftime("%d/%m/%Y")
 
             # Retrieval of the author of the article
             for div in soup_article.find_all('div'):
@@ -95,10 +98,5 @@ for cat in list_category:
 print(file_json)
 
 sources = "NouvelObs_anciens/"
-cur_date = date.datetime.now().date()
-
-if not os.path.exists(fileTarget+sources):
-    os.makedirs(fileTarget+sources)
-
 # Call the create_json function
-create_json(fileTarget, file_json, sources, "noob")
+g4_utils_v2.create_json(fileTarget, file_json, sources, "noob")

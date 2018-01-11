@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Groupe 4
 # Realized by BENJEBRIA Sofian, DELOEUVRE Noémie, SEGUELA Morgan
 
@@ -6,10 +7,11 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import utils
+import g4_utils_v2
 
 # Path to change : target where we will store the json files
-file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
+file_target = "/var/www/html/projet2018/data/clean/robot/"
++ str(date.datetime.now().date()) + "/"
 os.makedirs(file_target, exist_ok=True)
 
 url_rss_gorafi = "http://www.legorafi.fr/feed/"
@@ -44,7 +46,8 @@ for article in article_gorafi:
     for span in soup.find_all('span'):
         if span.get("class") == ['context']:
             author.append(span.a.get_text())
-            for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', str(span)):
+            for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
+                                      str(span)):
                 date_p = valeur.group(0)
 
     # Retrieving the theme
@@ -74,4 +77,4 @@ for article in article_gorafi:
 sources = "legorafi/"
 
 # Call the create_json function
-utils.create_json(file_target, file_json, sources, "lg")
+g4_utils_v2.create_json(file_target, file_json, sources, "lg")
