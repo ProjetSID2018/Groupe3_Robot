@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 # Groupe 4
-# DELOEUVRE Noémie
 # Céline MOTHES
 # Morgan SEGUELA
+# V1 : function create_json
+# V2 : add function add_to_index, get_hash, already_exists, create_index
+# V3 : add function recovery_flux_urss, recovery_article
+
 import csv
 import datetime as date
 import json
 import os
 import re
+import bs4
+import requests
 
 
 def add_to_index(date_publi, text, newspaper):
@@ -15,19 +20,20 @@ def add_to_index(date_publi, text, newspaper):
     with open("hash_text.csv", "a") as f:
         f.write(hash_text + ",")
 
+
 def get_hash(date_publi, text, newspaper):
-    """create a hash from the date, the title, and the newspaper to find if an article already exists
-    
+    """create a hash from the date, the title, and the newspaper to find
+    if an article already exists
     Arguments:
         date {string} -- date of the article
         text {string} -- title of the article
         newspaper {string} -- name of the newspaper
-    
+
     Returns:
         string -- a hash of the article
     """
 
-    date_publi = re.sub(r"/","",date_publi)
+    date_publi = re.sub(r"/", "", date_publi)
     text = re.sub(r"\W", "", text)
     newspaper = re.sub(r"\W", "", newspaper)
 
@@ -35,9 +41,9 @@ def get_hash(date_publi, text, newspaper):
     newspaper = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", newspaper)
     return date_publi + text + newspaper
 
+
 def already_exists(date_publi, text, newspaper):
     """create a test to see if the article entered already exists
-    
     Arguments:
         date {string} -- date of the article
         text {string} -- title of the article
@@ -49,17 +55,18 @@ def already_exists(date_publi, text, newspaper):
 
     hash_text = get_hash(date_publi, text, newspaper)
     with open("hash_text.csv", "r") as f:
-        csv_reader = csv.reader(f, delimiter =",")
+        csv_reader = csv.reader(f, delimiter=",")
         already_existing_hash = csv_reader.__next__()[:-1]
     return hash_text in already_existing_hash
 
+
 def create_index():
     """Create the index for all the article saved
-    """    
+    """
     source = "data/clean/robot/"
 
     dates_extract = os.listdir(source)
-    
+
     hash_text = []
 
     for date_extract in dates_extract:
@@ -68,7 +75,8 @@ def create_index():
             source_newpaper = source_date + newspaper + "/"
 
             for article in os.listdir(source_newpaper):
-                with open(source_newpaper + article, "r", encoding="utf-8") as f:
+                u8 = "utf-8"
+                with open(source_newpaper + article, "r", encoding=u8) as f:
                     data = json.load(f)
                     title = data["title"]
                     date_publi = data["date_publi"]
@@ -103,18 +111,53 @@ def create_json(file_target, list_article, sources, abbreviation):
     for article in list_article:
         if not already_exists(article["date_publi"], article["title"], article["newspaper"]):
             add_to_index(article["date_publi"], article["title"], article["newspaper"])
-
             if "/" in sources:
                 file_art = file_target + sources + "art_" + abbreviation + "_"\
                     + str(i) + "_" + str(cur_date) + "_robot.json"
-            else :
-                file_art = file_target + sources + "/" + "art_" + abbreviation + "_"\
-                    + str(i) + "_" + str(cur_date) + "_robot.json"
-
+            else:
+                file_art = file_target + sources + "/" + "art_" + abbreviation\
+                 + "_" + str(i) + "_" + str(cur_date) + "_robot.json"
             with open(file_art, "w", encoding="UTF-8") as fic:
                 json.dump(article, fic, ensure_ascii=False)
 
             i += 1
+
+
+def recovery_article(title, newspaper, author, date_publi, content, theme):
+    """
+    Arguments:
+        title : string
+        newspaper : string
+        author : list
+        date_publi : string
+        content : string
+        theme : string
+    Return : dictionary containing title, newspaper,
+    """
+    new_article = {
+                "title": title,
+                "newspaper": newspaper,
+                "author": author,
+                "date_publi": date_publi,
+                "content": content,
+                "theme": theme
+        }
+    return(new_article)
+
+
+def recovery_flux_urss(url_rss):
+    """
+    Arguments:
+        string containing the url of the rss feed
+    Return :
+        object containing the parse page
+    The function parse the page with beautifulsoup
+    """
+    req = requests.get(url_rss)
+    data = req.text
+    soup = bs4.BeautifulSoup(data, "lxml")
+    return(soup)
+
 
 if __name__ == '__main__':
     create_index()
