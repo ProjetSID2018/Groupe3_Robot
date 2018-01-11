@@ -132,7 +132,8 @@ def recovery_article(title, newspaper, author, date_publi, content, theme):
         date_publi : string
         content : string
         theme : string
-    Return : dictionary containing title, newspaper,
+    Return : dictionary containing title, newspaper, author, date_publi,
+             content, theme
     """
     new_article = {
                 "title": title,
@@ -155,8 +156,7 @@ def recovery_flux_urss(url_rss):
     """
     req = requests.get(url_rss)
     data = req.text
-    soup = bs4.BeautifulSoup(data, "lxml")
-    return(soup)
+    return(bs4.BeautifulSoup(data, "lxml"))
 
 
 if __name__ == '__main__':
