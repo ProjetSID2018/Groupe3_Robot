@@ -63,14 +63,14 @@ for article in article_humanite:
         if p.get("class") == ['TX']:
             contents += p.get_text()
 
-    new_article = [{
+    new_article = {
         "title": title,
         "newspaper": newspaper,
         "date_publi": date_p,
         "author": author,
         "theme": theme,
         "content": contents
-    }]
+    }
     file_json.append(new_article)
 
 sources = "Humanite_nouveaux/"
