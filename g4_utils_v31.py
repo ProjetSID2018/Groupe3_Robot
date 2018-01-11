@@ -110,8 +110,10 @@ def create_json(file_target, list_article, sources, abbreviation):
     i = 1
     cur_date = date.datetime.now().date()
     for article in list_article:
-        if not already_exists(article["date_publi"], article["title"], article["newspaper"]):
-            add_to_index(article["date_publi"], article["title"], article["newspaper"])
+        if not already_exists(article["date_publi"], article["title"],
+                              article["newspaper"]):
+            add_to_index(article["date_publi"], article["title"],
+                         article["newspaper"])
             if "/" in sources:
                 file_art = file_target + sources + "art_" + abbreviation + "_"\
                     + str(i) + "_" + str(cur_date) + "_robot.json"
@@ -133,7 +135,8 @@ def recovery_article(title, newspaper, author, date_publi, content, theme):
         date_publi : string
         content : string
         theme : string
-    Return : dictionary containing title, newspaper,
+    Return : dictionary containing title, newspaper, author, date_publi,
+             content, theme
     """
     new_article = {
                 "title": title,
@@ -156,8 +159,7 @@ def recovery_flux_urss(url_rss):
     """
     req = requests.get(url_rss)
     data = req.text
-    soup = bs4.BeautifulSoup(data, "lxml")
-    return(soup)
+    return(bs4.BeautifulSoup(data, "lxml"))
 
 """
 if __name__ == '__main__':
