@@ -109,8 +109,10 @@ def create_json(file_target, list_article, sources, abbreviation):
     i = 1
     cur_date = date.datetime.now().date()
     for article in list_article:
-        if not already_exists(article["date_publi"], article["title"], article["newspaper"]):
-            add_to_index(article["date_publi"], article["title"], article["newspaper"])
+        if not already_exists(article["date_publi"], article["title"],
+                              article["newspaper"]):
+            add_to_index(article["date_publi"], article["title"],
+                         article["newspaper"])
             if "/" in sources:
                 file_art = file_target + sources + "art_" + abbreviation + "_"\
                     + str(i) + "_" + str(cur_date) + "_robot.json"
