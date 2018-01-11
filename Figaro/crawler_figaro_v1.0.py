@@ -21,12 +21,13 @@ for a in soup.find_all("a"):
     and "http://www.lefigaro.fr/" != a.get('href')): 
             links_themes.append(a.get('href'))
 
+list_dictionnaires = [] 
 numero_article = 1
 for link_theme in links_themes:
     
     theme = re.search("http://www.lefigaro.fr/(.*)", link_theme)[1]
     theme = re.sub("/", "", theme)
-   
+    print("---"+theme+"---")
     req = requests.get(link_theme)
     data = req.text
     soup = BeautifulSoup(data, "lxml")
@@ -52,7 +53,7 @@ for link_theme in links_themes:
             or h2.get('class') == ['fig-profile-headline']):
                 url_articles.append(h2.a.get('href'))
                 
-    list_dictionnaires = []    
+       
     for url_article in url_articles:
         req = requests.get(url_article)
         data = req.text
@@ -95,4 +96,4 @@ for link_theme in links_themes:
 
         list_dictionnaires.append(new_article)
         
-        utils.create_json(file_target, list_dictionnaires, 'LeFigaroExistant/', 'lfi')
+utils.create_json(file_target, list_dictionnaires, 'LeFigaroExistant/', 'lfi')
