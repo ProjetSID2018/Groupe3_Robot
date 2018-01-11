@@ -3,12 +3,12 @@
 # DELOEUVRE Noémie
 # Céline MOTHES
 # Morgan SEGUELA
-import csv
-import datetime as date
-import json
-import os
-import re
 
+import os
+import json
+import datetime as date
+import csv
+import re
 
 def add_to_index(date, text, newspaper):
     hash_text = get_hash(date, text, newspaper)
@@ -102,6 +102,7 @@ def create_json(file_target, list_article, sources, abbreviation):
     cur_date = date.datetime.now().date()
     for article in list_article:
         if not already_exists(article["date_publi"], article["title"], article["newspaper"]):
+            
             add_to_index(article["date_publi"], article["title"], article["newspaper"])
 
             if "/" in sources:
@@ -119,3 +120,6 @@ def create_json(file_target, list_article, sources, abbreviation):
 if __name__ == '__main__':
     create_index()
     print(already_exists("30092017dtrssdnglftntrjtllrgsprnbrvclvlbs"))
+    
+
+

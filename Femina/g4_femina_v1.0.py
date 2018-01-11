@@ -8,7 +8,11 @@ import requests
 import unidecode
 import re
 import g4_utils_v2
+<<<<<<< HEAD
 
+=======
+import datetime as date
+>>>>>>> 4e5fca3b784765e38b9f6e3436445f6000c8a687
 
 fileTarget = "C:/"
 
@@ -52,10 +56,17 @@ for article in articles:
     # we get the publication date
     for div in soup.find_all('div'):
         if div.get("class") == ['infos']:
+<<<<<<< HEAD
             # TODO: mettre la date au format jj/mm/aaaa
             for valeur in re.finditer('[0-9]{4}-[0-9]{2}-[0-9]{2}',
                                       str(div.get('datetime'))):
                 publi_date = div.get('datetime')
+=======
+            for valeur in re.finditer('[0-9]{4}-[0-9]{2}-[0-9]{2}',
+                                      str(div.get('datetime'))):
+                publi_date = date.datetime.strptime(div.get('datetime'),
+                                                    '%d/%m/%Y')
+>>>>>>> 4e5fca3b784765e38b9f6e3436445f6000c8a687
 
     # récupération du contenu
     content = ''
