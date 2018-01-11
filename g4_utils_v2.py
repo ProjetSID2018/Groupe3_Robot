@@ -10,12 +10,12 @@ import os
 import re
 
 
-def add_to_index(date, text, newspaper):
-    hash_text = get_hash(date, text, newspaper)
+def add_to_index(date_publi, text, newspaper):
+    hash_text = get_hash(date_publi, text, newspaper)
     with open("hash_text.csv", "a") as f:
         f.write(hash_text + ",")
 
-def get_hash(date, text, newspaper):
+def get_hash(date_publi, text, newspaper):
     """create a hash from the date, the title, and the newspaper to find if an article already exists
     
     Arguments:
@@ -27,15 +27,15 @@ def get_hash(date, text, newspaper):
         string -- a hash of the article
     """
 
-    date = re.sub(r"/","",date)
+    date_publi = re.sub(r"/","",date_publi)
     text = re.sub(r"\W", "", text)
     newspaper = re.sub(r"\W", "", newspaper)
 
     text = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", text)
     newspaper = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", newspaper)
-    return date + text + newspaper
+    return date_publi + text + newspaper
 
-def already_exists(date, text, newspaper):
+def already_exists(date_publi, text, newspaper):
     """create a test to see if the article entered already exists
     
     Arguments:
@@ -47,7 +47,7 @@ def already_exists(date, text, newspaper):
         boolean -- False: Doesn't exist | True: Does exist
     """
 
-    hash_text = get_hash(date, text, newspaper)
+    hash_text = get_hash(date_publi, text, newspaper)
     with open("hash_text.csv", "r") as f:
         csv_reader = csv.reader(f, delimiter =",")
         already_existing_hash = csv_reader.__next__()[:-1]
@@ -58,11 +58,11 @@ def create_index():
     """    
     source = "data/clean/robot/"
 
-    dates = os.listdir(source)
+    dates_extract = os.listdir(source)
     
     hash_text = []
 
-    for date in dates:
+    for date_extract in dates_extract:
         source_date = source + date + "/"
         for newspaper in os.listdir(source_date):
             source_newpaper = source_date + newspaper + "/"
@@ -71,10 +71,10 @@ def create_index():
                 with open(source_newpaper + article, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     title = data["title"]
-                    date = data["date_publi"]
+                    date_publi = data["date_publi"]
                     newspaper = data["newspaper"]
 
-                hash_text.append(get_hash(date, title, newspaper))
+                hash_text.append(get_hash(date_publi, title, newspaper))
 
     hash_text = list(set(hash_text))
 
