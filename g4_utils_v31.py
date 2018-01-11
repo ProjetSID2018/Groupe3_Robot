@@ -61,7 +61,8 @@ def already_exists(date_publi, text, newspaper):
 
 
 def create_index():
-    """Create the index for all the article saved
+    """
+    Create the index for all the article saved
     """
     source = "data/clean/robot/"
 
@@ -162,3 +163,4 @@ def recovery_flux_urss(url_rss):
 if __name__ == '__main__':
     create_index()
     print(already_exists("30092017dtrssdnglftntrjtllrgsprnbrvclvlbs"))
+"""
