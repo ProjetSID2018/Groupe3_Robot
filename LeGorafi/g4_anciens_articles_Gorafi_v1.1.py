@@ -8,11 +8,10 @@
 
 import unidecode
 import re
-import g4_utils_v31 as utils
+import g4_utils_v32 as utils
 
 # Path to modify : target where we will store the json files
 file_target = "C:/"
-
 
 
 def recovery_information_lg(url):
