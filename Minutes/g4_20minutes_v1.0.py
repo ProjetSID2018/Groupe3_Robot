@@ -11,14 +11,12 @@ from unidecode import unidecode
 import re
 import g4_utils_v31 as utils
 
-
 # Verifier si le tag contient le texte Copyright
 def has_copyright(tag):
     """
         Verifier si le contenu de la balise contient le mot cle "copyright"
     """
     return "Copyright" in tag.get_text()
-
 
 def get_article(url):
     """Prend en argument une adresse url (url) et retourne une article au format 
@@ -72,6 +70,7 @@ def is_article(url):
     article=soup.find("article")
     return article != None
 
+<<<<<<< HEAD
 def recovery_new_articles_min(file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/"):
         
     source="Minutes/"
@@ -96,6 +95,8 @@ if __name__ == '__main__':
     recovery_new_articles_min()
     
 =======
+=======
+>>>>>>> cabfc0f3b5a250cc3b7ce47776515a33ea51d5ea
 def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/" + str(date.datetime.now().date()) +"/"):
     """
         it create a json for each new article
@@ -109,7 +110,6 @@ def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot
         if is_article(url):
             articles.append(get_article(url))
     utils.create_json(file_target, articles, "Minutes/", "min")
-
 
 if __name__ == '__main__':
     add_articles()       
