@@ -3,8 +3,6 @@
 """ -*- coding: utf-8 -*-
  Groupe 4
  SECK Mamadou
- V0 : create code
- V1.1 : create function
 """
 import os
 import json
@@ -12,7 +10,6 @@ import datetime as date
 from unidecode import unidecode
 import re
 import g4_utils_v31 as utils
-
 
 
 # Verifier si le tag contient le texte Copyright
