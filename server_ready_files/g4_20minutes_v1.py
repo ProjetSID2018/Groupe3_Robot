@@ -65,7 +65,7 @@ def is_article(url):
     return article != None
 
 
-def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/" + str(date.datetime.now().date()) +"/"):
+def add_articles(file_target = "data/clean/robot/" + str(date.datetime.now().date()) +"/"):
     """
         it create a json for each new article
     """
@@ -73,6 +73,7 @@ def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot
     items = soup.find_all("item")
     articles=[]
     for item in items:
+        print(item)
         #Récuperer le lien des articles
         url=re.search(r"<link/>(.*)<pubdate>", str(item)).group(1)
         if is_article(url):
