@@ -17,18 +17,6 @@ def has_copyright(tag):
     """
     return "Copyright" in tag.get_text()
 
-# Prend en parametre une catégorie et retour toutes les articles de cette catégorie
-def get_article_of_category(url):
-    result=[]
-    soup=utils.recovery_flux_urss(url)
-    articles=soup.find_all("div",class_="item--body")
-    for article in articles:
-        url_article=article.find("a").get("href")
-        if is_article(url_article):
-            # Insérer le nouveau article dans un le tableau
-            result.append(get_article(url_article))
-    return result
-
 # Prend en argument une adresse url (url) et retourne une aticle 
 def get_article(url):
     from unidecode import unidecode
@@ -47,8 +35,8 @@ def get_article(url):
     regex = re.compile(r'[\n\r\t]')
     for span in article.find_all("span",class_="author--name"):
         # Enlever les \n \r \t du contenu
-        author = regex.sub("", unidecode(span.get_text())).strip()
-        authors.append(author)
+        author = regex.sub("", unidecode(span.get_text()))
+        authors.append(author.strip())
     # Date de publication de l'article
     date_pub=article.find("span",itemprop="datePublished").get("datetime")[:10].replace("-","/")
     # Theme de l'article
@@ -61,30 +49,21 @@ def get_article(url):
     content = regex.sub("", content)
     return utils.recovery_article(unidecode(title),unidecode(newspaper),authors,date_pub,unidecode(content),unidecode(theme))
 
+
+# Prend en argument une adresse url et retourne vrai s'il est une article et faux sinon
 def is_article(url):
     soup=utils.recovery_flux_urss(url)
     return soup.find("div",class_="article--text")!=None
-
 
 
 def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/" + str(date.datetime.now().date()) +"/"):
     """
         it create a json for each new article
     """
-    categories={
-        "cinema" : 20,
-        "scenes" : 20,
-        "enfants" : 3,
-        "idees" : 20,
-    }
+    soup = utils.recovery_flux_urss("http://www.20minutes.fr/feeds/rss-actu-france.xml")
+    items = soup.find_all("item")
     articles=[]
-
-    for category,nbre in categories.items() :
-        for i in range(0,nbre) :
-            url="http://www.telerama.fr/"+category+"/articles?page="+str(i)
-            print(url)
-            if is_article(url):
-                articles.extend(get_article_of_category(url))
+    articles.append(get_article("http://www.telerama.fr/cinema/lechange-des-princesses-marc-dugain-filme-la-cour-de-louis-xv-avec-une-fascination-perverse,n5417599.php"))
     utils.create_json(file_target, articles, "Telerama/", "tera")
 
 if __name__ == '__main__':
