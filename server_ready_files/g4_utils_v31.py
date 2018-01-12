@@ -63,31 +63,39 @@ def already_exists(date_publi, text, newspaper):
 def create_index():
     """Create the index for all the article saved
     """
-    source = "data/clean/robot/"
+    try:
+            
+        source = "/var/www/html/projet2018/data/clean/robot/"
 
-    dates_extract = os.listdir(source)
+        dates_extract = os.listdir(source)
 
-    hash_text = []
+        hash_text = []
 
-    for date_extract in dates_extract:
-        source_date = source + date_extract + "/"
-        for newspaper in os.listdir(source_date):
-            source_newpaper = source_date + newspaper + "/"
+        for date_extract in dates_extract:
+            source_date = source + date_extract + "/"
+            for newspaper in os.listdir(source_date):
+                source_newpaper = source_date + newspaper + "/"
 
-            for article in os.listdir(source_newpaper):
-                u8 = "utf-8"
-                with open(source_newpaper + article, "r", encoding=u8) as f:
-                    data = json.load(f)
-                    title = data["title"]
-                    date_publi = data["date_publi"]
-                    newspaper = data["newspaper"]
+                for article in os.listdir(source_newpaper):
+                    u8 = "utf-8"
+                    with open(source_newpaper + article, "r", encoding=u8) as f:
+                        data = json.load(f)
+                        title = data["title"]
+                        date_publi = data["date_publi"]
+                        newspaper = data["newspaper"]
 
-                hash_text.append(get_hash(date_publi, title, newspaper))
+                    hash_text.append(get_hash(date_publi, title, newspaper))
 
-    hash_text = list(set(hash_text))
+        hash_text = list(set(hash_text))
 
-    with open("hash_text.csv", "a") as f:
-        f.write(",".join(hash_text)+",")
+        with open("hash_text.csv", "a") as f:
+            f.write(",".join(hash_text)+",")
+        print("creer")
+
+    except : 
+        with open("hash_text.csv", "w") as f:
+            f.write(",")
+            print("creer")
 
 
 # Entree:

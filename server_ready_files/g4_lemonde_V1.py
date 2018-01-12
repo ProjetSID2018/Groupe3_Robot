@@ -39,9 +39,8 @@ def linkRSS(url_rss_lib):
 def articlesList(link_rss):
     list_article = []
     for lr in link_rss:
-        test = not "blog.lemonde" in lr and not "/live/" in lr and not "/dossier/" in lr and not "/photo/" in lr
-        test = test and not "/visuel/" in lr
-        if test:
+
+        if "/article/" in lr:
             
             req = requests.get(lr)
             data = req.text
