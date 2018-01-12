@@ -19,7 +19,7 @@ def recovery_information_fusc(url):
             article : dictionary
         It retrieve for each article the title, newspaper, author, date, theme
     """
-    soup = utils.recovery_flux_urss(url)
+    soup = utils.recovery_flux_rss(url)
     # retrieve title
     title = unidecode.unidecode(soup.title.string)
     indice = title.find('|')
