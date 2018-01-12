@@ -62,7 +62,7 @@ def recovery_link_new_articles(url_rss):
         Return:
             retrieving links of new articles thanks to the rss feed
     """
-    soup = utils.recovery_flux_urss(url_rss)
+    soup = utils.recovery_flux_url_rss(url_rss)
     list_link = []
     for link in soup.find_all("a"):
         if link.get("class") == ["first-capitalize"]:
