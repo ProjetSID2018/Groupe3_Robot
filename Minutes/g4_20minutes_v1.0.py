@@ -40,7 +40,9 @@ def get_article(url):
         == None else unidecode(article.find("header")
         .find("p", class_="authorsign-label").get_text()).split(" et ")
     # Date de publication de l'article
-    date_pub=article.find("time").get("datetime")
+    date_pub= article.find("time").get("datetime")
+    date_pub = date.datetime.strptime(date_pub)
+    print(str(date_pub.date()))
     # Theme de l'article
     theme = article.find("ol", class_="breadcrumb-list")\
         .find_all("li")[1].find("span").get_text()
@@ -61,22 +63,25 @@ def is_article(url):
     article=soup.find("article")
     return article != None
 
+def recovery_new_articles_min(file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/"):
+        
+    source="Minutes/"
+    url_rss= "http://www.20minutes.fr/feeds/rss-actu-france.xml"
 
-# Chemin repertoire des articles
-file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/"
-source="Minutes/"
-url_rss= "http://www.20minutes.fr/feeds/rss-actu-france.xml"
+    soup = utils.recovery_flux_urss(url_rss)
 
-soup = utils.recovery_flux_urss(url_rss)
+    items = soup.find_all("item")
 
-items = soup.find_all("item")
+    articles=[]
+    for item in items:
+        #Récuperer le lien des articles
+        url=re.search(r"<link/>(.*)<pubdate>", str(item)).group(1)
+        if is_article(url):
+            articles.append(get_article(url))
 
-articles=[]
-for item in items:
-    #Récuperer le lien des articles
-    url=re.search(r"<link/>(.*)<pubdate>", str(item)).group(1)
-    if is_article(url):
-        articles.append(get_article(url))
+    utils.create_index()
+    utils.create_json(file_target,articles,source,"min")
 
-utils.create_index()
-utils.create_json(file_target,articles,source,"min")
+if __name__ == '__main__':
+    recovery_new_articles_min()
+    
