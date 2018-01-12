@@ -13,6 +13,7 @@ import os
 import re
 import bs4
 import requests
+import unidecode
 
 
 def add_to_index(date_publi, text, newspaper):
@@ -143,17 +144,17 @@ def recovery_article(title, newspaper, author, date_publi, content, theme):
     Return : dictionary containing title, newspaper,
     """
     new_article = {
-                "title": title,
-                "newspaper": newspaper,
-                "author": author,
+                "title": unidecode.unidecode(title),
+                "newspaper": unidecode.unidecode(newspaper),
+                "author": unidecode.unidecode(author),
                 "date_publi": str(date.datetime.strptime(date_publi, "%d/%m/%Y").date()),
-                "content": content,
-                "theme": theme
+                "content": unidecode.unidecode(content),
+                "theme": unidecode.unidecode(theme)
         }
     return(new_article)
 
 
-def recovery_flux_urss(url_rss):
+def recovery_flux_url_rss(url_rss):
     """
     Arguments:
         string containing the url of the rss feed
