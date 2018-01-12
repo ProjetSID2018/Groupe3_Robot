@@ -13,6 +13,7 @@ import os
 import re
 import bs4
 import requests
+import unidecode
 
 
 def add_to_index(date_publi, text, newspaper):
@@ -59,37 +60,44 @@ def already_exists(date_publi, text, newspaper):
         already_existing_hash = csv_reader.__next__()[:-1]
     return hash_text in already_existing_hash
 
-"""
+
 def create_index():
-    
-    Create the index for all the article saved
-    
-    source = "data/clean/robot/"
+    """Create the index for all the article saved
+    """
+    try:
+            
+        source = "/var/www/html/projet2018/data/clean/robot/"
 
-    dates_extract = os.listdir(source)
+        dates_extract = os.listdir(source)
 
-    hash_text = []
+        hash_text = []
 
-    for date_extract in dates_extract:
-        source_date = source + date_extract + "/"
-        for newspaper in os.listdir(source_date):
-            source_newpaper = source_date + newspaper + "/"
+        for date_extract in dates_extract:
+            source_date = source + date_extract + "/"
+            for newspaper in os.listdir(source_date):
+                source_newpaper = source_date + newspaper + "/"
 
-            for article in os.listdir(source_newpaper):
-                u8 = "utf-8"
-                with open(source_newpaper + article, "r", encoding=u8) as f:
-                    data = json.load(f)
-                    title = data["title"]
-                    date_publi = data["date_publi"]
-                    newspaper = data["newspaper"]
+                for article in os.listdir(source_newpaper):
+                    u8 = "utf-8"
+                    with open(source_newpaper + article, "r", encoding=u8) as f:
+                        data = json.load(f)
+                        title = data["title"]
+                        date_publi = data["date_publi"]
+                        newspaper = data["newspaper"]
 
-                hash_text.append(get_hash(date_publi, title, newspaper))
+                    hash_text.append(get_hash(date_publi, title, newspaper))
 
-    hash_text = list(set(hash_text))
+        hash_text = list(set(hash_text))
 
-    with open("hash_text.csv", "a") as f:
-        f.write(",".join(hash_text)+",")
-"""
+        with open("hash_text.csv", "a") as f:
+            f.write(",".join(hash_text)+",")
+        print("creer")
+
+    except : 
+        with open("hash_text.csv", "w") as f:
+            f.write(",")
+            print("creer")
+
 
 # Entree:
 #   file_target: string containing the path of the folder
@@ -110,10 +118,8 @@ def create_json(file_target, list_article, sources, abbreviation):
     i = 1
     cur_date = date.datetime.now().date()
     for article in list_article:
-        if not already_exists(article["date_publi"], article["title"],
-                              article["newspaper"]):
-            add_to_index(article["date_publi"], article["title"],
-                         article["newspaper"])
+        if not already_exists(article["date_publi"], article["title"], article["newspaper"]):
+            add_to_index(article["date_publi"], article["title"], article["newspaper"])
             if "/" in sources:
                 file_art = file_target + sources + "art_" + abbreviation + "_"\
                     + str(i) + "_" + str(cur_date) + "_robot.json"
@@ -135,21 +141,20 @@ def recovery_article(title, newspaper, author, date_publi, content, theme):
         date_publi : string
         content : string
         theme : string
-    Return : dictionary containing title, newspaper, author, date_publi,
-             content, theme
+    Return : dictionary containing title, newspaper,
     """
     new_article = {
-                "title": title,
-                "newspaper": newspaper,
-                "author": author,
-                "date_publi": date.datetime.strf(date.datetime.strptime(date_publi), '%Y-%m-%d'),
-                "content": content,
-                "theme": theme
+                "title": unidecode.unidecode(title),
+                "newspaper": unidecode.unidecode(newspaper),
+                "author": unidecode.unidecode(author),
+                "date_publi": str(date.datetime.strptime(date_publi, "%d/%m/%Y").date()),
+                "content": unidecode.unidecode(content),
+                "theme": unidecode.unidecode(theme)
         }
     return(new_article)
 
 
-def recovery_flux_urss(url_rss):
+def recovery_flux_url_rss(url_rss):
     """
     Arguments:
         string containing the url of the rss feed
@@ -159,10 +164,9 @@ def recovery_flux_urss(url_rss):
     """
     req = requests.get(url_rss)
     data = req.text
-    return(bs4.BeautifulSoup(data, "lxml"))
+    soup = bs4.BeautifulSoup(data, "lxml")
+    return(soup)
 
-"""
+
 if __name__ == '__main__':
     create_index()
-    print(already_exists("30092017dtrssdnglftntrjtllrgsprnbrvclvlbs"))
-"""
