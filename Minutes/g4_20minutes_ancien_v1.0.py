@@ -3,8 +3,6 @@
 """ -*- coding: utf-8 -*-
  Groupe 4
  SECK Mamadou
- V0 : create code
- V1.1 : create function
 """
 import os
 import json
@@ -17,6 +15,7 @@ import g4_utils_v31 as utils
 # Verifier si le tag contient le texte Copyright
 def has_copyright(tag):
     """
+
         Verifier si le contenu de la balise contient le mot cle "copyright"
     """
     return "Copyright" in tag.get_text()
