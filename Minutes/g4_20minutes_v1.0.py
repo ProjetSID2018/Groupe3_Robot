@@ -52,7 +52,7 @@ def get_article(url):
     date_tab=article.find("time").get("datetime")[:10].split("-")
     date_tab.reverse()
     date_pub="/".join(date_tab)
->>>>>>> d677bee5ae4ff639bd985e55b7893f67e2e35d57
+>>>>>>> master
     # Theme de l'article
     theme = article.find("ol", class_="breadcrumb-list")\
         .find_all("li")[1].find("span").get_text()
@@ -117,4 +117,4 @@ def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot
 if __name__ == '__main__':
     add_articles()       
 
->>>>>>> d677bee5ae4ff639bd985e55b7893f67e2e35d57
+>>>>>>> master
