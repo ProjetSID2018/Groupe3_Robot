@@ -1,24 +1,33 @@
 # -*- coding: utf-8 -*-
 # Authors : Noemie DELOEUVRE, Morgan SEGUELA, Celine Mothes, Aurelien PELAT
-# Version : 1.0
+# Version : 1.1
 
-import os
-import json
 import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import http.client
-from urllib.parse import urlparse
-#A ajouter : import g4_utils_v2
+import g4_utils_v31 as utils
+
+def collect_url_themes(soup):
+    list_url_themes = []
+    # Creation de la liste des themes disponibles
+    for li in soup.find_all('li'):
+        if li.get("class") == ['header-red-li']:
+            for a in li.find_all('a'):
+                if (a.get("href") != '/video/'
+                and a.get("href") != 'http://afrique.lepoint.fr'
+                and a.get("href") != '/edition-abonnes/'):
+                    list_url_themes.append('http://www.lepoint.fr' +
+                                              a.get("href"))
+    return list_url_themes
 
 """
 Fonction ajoutant des articles dans une liste @fichier_json donnee
 d une adresse url @url_lepoint_theme donnee
 """
-def collect_url_articles(url_articles, url_lepoint_theme):
+def collect_url_articles(url_articles, url_theme):
     # Parsing de la page du theme avec Beautiful Soup
-    req = requests.get(url_lepoint_theme)
+    req = requests.get(url_theme)
     data = req.text
     soup = BeautifulSoup(data, "lxml")
     
@@ -32,9 +41,9 @@ def collect_url_articles(url_articles, url_lepoint_theme):
                 and 'http://www.lepoint.fr'+a.get('href') not in url_articles):
                     url_articles.append('http://www.lepoint.fr'+a.get('href'))
 
-def collect_articles(list_dictionnaires, url_articles):
+def collect_articles(list_dictionnaires, list_url_articles, theme):
     # Parcours des articles du theme
-    for url_article in url_articles:
+    for url_article in list_url_articles:
 
         # Parsing de l article avec Beautiful Soup
         req = requests.get(url_article)
@@ -84,65 +93,38 @@ def collect_articles(list_dictionnaires, url_articles):
                 "content": contenu,
                 "theme": theme
         }
-        
-        print(titre)
         # Ajout de l article a la liste d articles
         list_dictionnaires.append(new_article)
 
-fileTarget = 'C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/'
+def recovery_new_articles_lpt(file_target = "data/clean/robot/" + str(date.datetime.now().date()) +"/"):
+    
+    # Adresse url Le Point
+    url_lepoint = 'http://www.lepoint.fr/'
+    
+    # Parsing de la page d accueil avec Beautiful Soup
+    req = requests.get(url_lepoint)
+    data = req.text
+    soup = BeautifulSoup(data, "lxml")
+    
+    list_url_themes = collect_url_themes(soup)
+    
+    # Creation de la liste d articles du theme
+    list_url_articles = []
+    # Creation de la liste des articles
+    list_dictionnaires = []
+    # Parcours des themes
+    for url_theme in list_url_themes:
+        # Recuperation du theme
+        theme = re.search("http://www.lepoint.fr/(.*)/", url_theme)[1]
+        # Collecte des url des articles
+        collect_url_articles(list_url_articles, url_theme)
+        for index_page in range(2, 10):
+            collect_url_articles(list_url_articles,
+                                 url_theme+"index_"+str(index_page)+".php")
+        #Collecte des articles
+        collect_articles(list_dictionnaires, list_url_articles, theme)
+    
+    utils.create_json(file_target, list_dictionnaires, "LePointExistant/", "lpt")
 
-# Adresse url Le Point
-url_lepoint = 'http://www.lepoint.fr/'
-
-# Parsing de la page d accueil avec Beautiful Soup
-req = requests.get(url_lepoint)
-data = req.text
-soup = BeautifulSoup(data, "lxml")
-
-# Creation de la liste des themes disponibles
-url_themes_lepoint = []
-for li in soup.find_all('li'):
-    if li.get("class") == ['header-red-li']:
-        for a in li.find_all('a'):
-            if ( a.get("href") != '/video/'
-             and a.get("href") != 'http://afrique.lepoint.fr'
-             and a.get("href") != '/edition-abonnes/'):
-                url_themes_lepoint.append('http://www.lepoint.fr' +
-                                            a.get("href"))
-
-# Creation de la liste d articles du theme
-url_articles = []
-# Parcours des themes
-for url_theme in url_themes_lepoint:
-
-    # Recuperation du theme
-    theme = re.search("http://www.lepoint.fr/(.*)/", url_theme)[1]
-    print("---------------------------"+theme+"------------------------")
-    # Collecte des articles
-    collect_url_articles(url_articles, url_theme)
-    for index_page in range(2, 10):
-        print(url_theme+"index_"+str(index_page)+".php")
-        collect_url_articles(url_articles,
-                         url_theme+"index_"+str(index_page)+".php")
-
-
-# Creation de la liste des articles   
-list_dictionnaires = []
-
-collect_articles(list_dictionnaires, url_articles)
-
-# Creation du dossier contenant les articles
-sources = "LePointExistant/"
-cur_date = date.datetime.now().date()
-
-if not os.path.exists(fileTarget+sources):
-    os.makedirs(fileTarget+sources)
-
-numero_article = 1
-# Creation du fichier article json et ajout dans le dossier
-for article in list_dictionnaires:
-    file_art = fileTarget + sources + "artlpt" + str(numero_article) +\
-        str(cur_date) + "_robot.json"
-    with open(file_art, "w", encoding="UTF-8") as fic:
-        json.dump(article, fic, ensure_ascii=False)
-    numero_article += 1
+if __name__ == '__main__':
+    recovery_new_articles_lpt()
