@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
 # Group 4
 # Realized by BENJEBRIA Sofian, DELOEUVRE Noémie
 
@@ -98,6 +101,8 @@ if not os.path.exists(file_target+sources):
 
 # Call the create_json function
 create_json(file_target, file_json, sources, "equi")
+<<<<<<< HEAD
+=======
 =======
 # Group 4
 # Realized by BENJEBRIA Sofian, DELOEUVRE Noémie
@@ -199,3 +204,4 @@ if not os.path.exists(file_target+sources):
 # Call the create_json function
 create_json(file_target, file_json, sources, "equi")
 >>>>>>> 9ea20355c37d0ea4763d69935fe73b4e59ee81b0
+>>>>>>> master
