@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+"""
+ Groupe 4
+ SECK Mamadou
+"""
 import os
 import json
 import datetime as date
@@ -32,10 +35,10 @@ def get_article(url):
     regex = re.compile(r'[\n\r\t]')
     for span in article.find_all("span",class_="author--name"):
         # Enlever les \n \r \t du contenu
-        author = regex.sub("", unidecode(span.get_text()))
+        author = regex.sub("", unidecode(span.get_text())).strip()
         authors.append(author)
     # Date de publication de l'article
-    date_pub=article.find("span",itemprop="datePublished").get("datetime")
+    date_pub=article.find("span",itemprop="datePublished").get("datetime")[:10].replace("-","/")
     # Theme de l'article
     # Contenu de l'article
     content=""
@@ -52,18 +55,18 @@ def is_article(url):
     soup=utils.recovery_flux_urss(url)
     return soup.find("div",class_="article--text")!=None
 
-articles=[]
 
-articles.append(get_article("http://www.telerama.fr/cinema/lechange-des-princesses-marc-dugain-filme-la-cour-de-louis-xv-avec-une-fascination-perverse,n5417599.php"))
+def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/" + str(date.datetime.now().date()) +"/"):
+    """
+        it create a json for each new article
+    """
+    soup = utils.recovery_flux_urss("http://www.20minutes.fr/feeds/rss-actu-france.xml")
+    items = soup.find_all("item")
+    articles=[]
+    url="http://www.telerama.fr/cinema/lechange-des-princesses-marc-dugain-filme-la-cour-de-louis-xv-avec-une-fascination-perverse,n5417599.php"
+    if is_article(url):
+        articles.append(get_article())
+    utils.create_json(file_target, articles, "Telerama/", "tera")
 
-# Chemin repertoire des articles
-file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/"
-
-
-articles=[]
-
-source="Telerama/"
-
-
-utils.create_index()
-utils.create_json(file_target,articles,source,"tera")
+if __name__ == '__main__':
+    add_articles()     

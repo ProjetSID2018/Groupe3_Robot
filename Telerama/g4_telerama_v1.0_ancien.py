@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+"""
+ Groupe 4
+ SECK Mamadou
+"""
 import os
 import json
 import datetime as date
@@ -44,10 +47,10 @@ def get_article(url):
     regex = re.compile(r'[\n\r\t]')
     for span in article.find_all("span",class_="author--name"):
         # Enlever les \n \r \t du contenu
-        author = regex.sub("", unidecode(span.get_text()))
+        author = regex.sub("", unidecode(span.get_text())).strip()
         authors.append(author)
     # Date de publication de l'article
-    date_pub=article.find("span",itemprop="datePublished").get("datetime")
+    date_pub=article.find("span",itemprop="datePublished").get("datetime")[:10].replace("-","/")
     # Theme de l'article
     # Contenu de l'article
     content=""
@@ -62,25 +65,27 @@ def is_article(url):
     soup=utils.recovery_flux_urss(url)
     return soup.find("div",class_="article--text")!=None
 
-# Chemin repertoire des articles
-file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/"
 
 
-articles=[]
+def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/" + str(date.datetime.now().date()) +"/"):
+    """
+        it create a json for each new article
+    """
+    categories={
+        "cinema" : 20,
+        "scenes" : 20,
+        "enfants" : 3,
+        "idees" : 20,
+    }
+    articles=[]
 
-source="Telerama/"
+    for category,nbre in categories.items() :
+        for i in range(0,nbre) :
+            url="http://www.telerama.fr/"+category+"/articles?page="+str(i)
+            print(url)
+            if is_article(url):
+                articles.extend(get_article_of_category(url))
+    utils.create_json(file_target, articles, "Telerama/", "tera")
 
-categories={
-    "cinema" : 20,
-    "scenes" : 15,
-    "enfants" : 3,
-    "idees" : 10,
-}
-
-for category,nbre in categories.items() :
-    for i in range(0,nbre) :
-        url="http://www.telerama.fr/"+category+"/articles?page="+str(i)
-        articles.extend(get_article_of_category(url))
-
-utils.create_index()
-utils.create_json(file_target,articles,source,"tera")
+if __name__ == '__main__':
+    add_articles()     
