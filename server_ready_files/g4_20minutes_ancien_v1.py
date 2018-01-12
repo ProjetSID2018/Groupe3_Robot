@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" -*- coding: utf-8 -*-
+"""
  Groupe 4
  SECK Mamadou
- V0 : create code
- V1.1 : create function
 """
 import os
 import json
