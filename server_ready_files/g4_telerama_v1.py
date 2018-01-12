@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+"""
+ Groupe 4
+ SECK Mamadou
+"""
 import os
 import json
 import datetime as date
