@@ -17,6 +17,7 @@ import os
 import re
 import bs4
 import requests
+from hashlib import md5
 import unidecode
 
 
@@ -155,6 +156,7 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         authors[ii] = unidecode.unidecode(authors[ii])
 
     new_article = {
+                "id_art" : get_hash(date_publi,title,newspaper),
                 "title": unidecode.unidecode(title),
                 "newspaper": unidecode.unidecode(newspaper),
                 "author": authors,
