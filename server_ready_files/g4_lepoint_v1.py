@@ -6,7 +6,7 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import g4_utils_v31 as utils
+import g4_utils_v32 as utils
 
 
 def collect_url_themes(soup):
@@ -100,7 +100,6 @@ def collect_articles(list_dictionnaires, list_url_articles, theme):
                 "theme": theme
         }
 
-        print(titre)
         # Ajout de l article a la liste d articles
         list_dictionnaires.append(new_article)
 
@@ -130,11 +129,9 @@ def recovery_new_articles_lpt(
     for url_theme in list_url_themes:
         # Recuperation du theme
         theme = re.search("http://www.lepoint.fr/(.*)/", url_theme)[1]
-        print("---------------------------"+theme+"------------------------")
         # Collecte des url des articles
         collect_url_articles(list_url_articles, url_theme)
         for index_page in range(2, 10):
-            print(url_theme+"index_"+str(index_page)+".php")
             collect_url_articles(list_url_articles,
                                  url_theme+"index_"+str(index_page)+".php")
         # Collecte des articles

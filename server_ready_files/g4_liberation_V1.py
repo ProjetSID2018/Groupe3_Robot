@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import unidecode
-import g4_utils_v31 as utilsg4
+import g4_utils_v32 as utilsg4
 import html
 
 
@@ -128,7 +128,7 @@ def recuperation_info_libe(file_target = "data/clean/robot/" + str(date.datetime
     list_articles = []
 
     for lr in link_rss:
-        if not "blogs.liberation" in lr:
+        if "www.liberation.fr" in lr:
             informations = get_information(lr)
         else:
             informations = None

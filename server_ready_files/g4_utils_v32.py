@@ -147,7 +147,7 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         theme : string
     Return : dictionary containing title, newspaper,
     """
-    print(newspaper)
+    print(authors)
     for ii in range(len(authors)):
         authors[ii] = unidecode.unidecode(authors[ii])
 
