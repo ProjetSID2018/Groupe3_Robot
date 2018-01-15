@@ -15,7 +15,7 @@ import re
 import bs4
 import requests
 import unidecode
-
+from hashlib import md5
 
 def add_to_index(date_publi, text, newspaper):
     hash_text = get_hash(date_publi, text, newspaper)
@@ -35,13 +35,16 @@ def get_hash(date_publi, text, newspaper):
         string -- a hash of the article
     """
 
-    date_publi = re.sub(r"/", "", date_publi)
+    """date_publi = re.sub(r"/", "", date_publi)
     text = re.sub(r"\W", "", text)
     newspaper = re.sub(r"\W", "", newspaper)
 
     text = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", text)
     newspaper = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", newspaper)
     return date_publi + text + newspaper
+    """
+    hash=md5("{} {} {}".format(date_publi,text,newspaper).encode())
+    return hash.hexdigest()
 
 
 def already_exists(date_publi, text, newspaper):
@@ -145,13 +148,13 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         date_publi : string
         content : string
         theme : string
-    Return : dictionary containing title, newspaper,
+    Return : dictionary containing id_art,title, newspaper,authors,date_pub,content,theme
     """
     print(newspaper)
     for ii in range(len(authors)):
         authors[ii] = unidecode.unidecode(authors[ii])
-
     new_article = {
+                "id_art" : get_hash(date_publi,title,newspaper),
                 "title": unidecode.unidecode(title),
                 "newspaper": unidecode.unidecode(newspaper),
                 "author": authors,
@@ -178,4 +181,5 @@ def recovery_flux_url_rss(url_rss):
 
 
 if __name__ == '__main__':
-    create_index()
+   # create_index()
+   print(get_hash("10-11-2017","groupe 4 robot","le journal"))
