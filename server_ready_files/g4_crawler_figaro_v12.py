@@ -146,7 +146,7 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
 
         collect_articles(list_dictionnaires, list_url_articles, theme)
 
-    utils.create_json(file_target, list_dictionnaires, 'LeFigaroCrawler/',
+    utils.create_json(file_target, list_dictionnaires, 'lefigaro/',
                       'lfi')
 
 
