@@ -129,7 +129,6 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
 
     list_url_themes = collect_url_themes("http://www.lefigaro.fr/")
 
-    # Creation de la liste des articles
     list_dictionnaires = []
 
     for url_theme in list_url_themes:
@@ -138,7 +137,6 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
         theme = re.sub("/", "", theme)
         list_url_sub_themes = collect_url_sub_themes(url_theme)
 
-        # Creation de la liste d articles du theme
         list_url_articles = []
 
         for url_sub_theme in list_url_sub_themes:
