@@ -115,14 +115,14 @@ def create_json(file_target, list_article, sources, abbreviation):
     It places the json file in the folder corresponding to the journal
     if it exists otherwise it creates it.
     """
-    if not os.path.exists(file_target+sources):
-        os.makedirs(file_target+sources)
-        ii = 1
-    else:
-        list_file = os.listdir(file_target+sources)
-        last_file = list_file[-1]
+	os.makedirs(file_target+sources, exist_ok = True)
+	list_file = os.listdir(file_target+sources)
+	if list_file:
+		last_file = list_file[-1]
         delimiter = last_file.split("_")
         ii = int(delimiter[2]) + 1
+	else:
+		ii = 1
     cur_date = date.datetime.now().date()
     for article in list_article:
         if not already_exists(article["date_publi"], article["title"],
