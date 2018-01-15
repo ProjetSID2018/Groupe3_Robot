@@ -35,37 +35,34 @@ for article in article_humanite:
     for meta in soup.find_all('meta'):
         if meta.get("property") == 'og:title':
             title = meta.get("content")
-    
-    for meta in soup.find_all('meta'):
-        if meta.get("property") == 'og:site_name':
-            newspaper = meta.get("content")
-    
+
     for meta in soup.find_all('meta'):
         if meta.get("property") == 'article:section':
             theme = meta.get("content")
-    
+
     for h2 in soup.find_all('h2'):
         for a in h2.find_all('a'):
             for valeur in re.finditer('auteur', str(a.get("href"))):
                 author = a.get_text()
-    
+
     for meta in soup.find_all('meta'):
         if meta.get("property") == 'article:published_time':
             raw_date = meta.get("content")
             date_p = raw_date[0:10]
             date_p = datetime.strptime(date_p, "%Y-%m-%d").strftime("%d/%m/%Y")
-    
+
     contents = ""
-    for p in soup.find_all('p'):
-        for a in p.find_all('a'):
-            if a.get_text() == "Lire la suite":
-                a.string = ""
-        if p.get("class") == ['TX']:
-            contents += p.get_text()
+    for div in soup.find_all('div'):
+        if div.get("class") == ['field', 'field-name-field-news-chapo', 'field-type-text-long', 'field-label-hidden']:
+            for p in div.find_all('p'):
+                contents += p.get_text()
+        if div.get("class") == ['field', 'field-name-field-news-text', 'field-type-text-long', 'field-label-hidden']:
+            for p in div.find_all('p'):
+                contents += p.get_text()
 
     new_article = {
         "title": title,
-        "newspaper": newspaper,
+        "newspaper": "Humanite",
         "date_publi": date_p,
         "author": author,
         "theme": theme,
