@@ -38,13 +38,8 @@ def get_hash(date_publi, text, newspaper):
         string -- a hash of the article
     """
 
-    date_publi = re.sub(r"/", "", date_publi)
-    text = re.sub(r"\W", "", text)
-    newspaper = re.sub(r"\W", "", newspaper)
-
-    text = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", text)
-    newspaper = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", newspaper)
-    return date_publi + text + newspaper
+    hash=md5("{} {} {}".format(date_publi,text,newspaper).encode())
+    return hash.hexdigest()
 
 
 def already_exists(date_publi, text, newspaper):
