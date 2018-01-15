@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
  Group 4
- Realized by BENJEBRIA Sofian, DELOEUVRE Noémie, Céline Mothes
+ Realized by BENJEBRIA Sofian, DELOEUVRE Noémie, MOTHES Céline Mothes,
+             SEGUELA Morgan
  V1 : create code
  V1.1 : create function
 """
@@ -9,9 +10,6 @@
 import unidecode
 import re
 import g4_utils_v32 as utils
-
-# Path to modify : target where we will store the json files
-file_target = "C:/"
 
 
 def recovery_information_lg(url):
@@ -26,7 +24,6 @@ def recovery_information_lg(url):
     balise_title = soup.title.get_text()
     sep = balise_title.split("—")
     title = unidecode.unidecode("—".join(sep[:-1]))
-    newspaper = unidecode.unidecode("Le Gorafi")
     author = []
 
     # Retrieving of author and publication date
@@ -50,7 +47,7 @@ def recovery_information_lg(url):
             for p in div.find_all('p'):
                 contents += p.get_text() + " "
             contents = unidecode.unidecode(contents)
-            new_article = utils.recovery_article(title, newspaper, author,
+            new_article = utils.recovery_article(title, "Le Gorafi", author,
                                                  date_p, theme, contents)
     return (new_article)
 
@@ -63,9 +60,9 @@ def recovery_link_old_articles_lg(url_rss):
             link_article = list
         Retrieving links of new articles thanks to the rss feed
     """
-    list_category = ["france/politique"] #, "france/societe", "monde-libre",
-                   #  "france/economie", "culture", "people", "sports",
-                    # "hi-tech", "sciences", "ledito"]
+    list_category = ["france/politique", "france/societe", "monde-libre",
+                     "france/economie", "culture", "people", "sports",
+                     "hi-tech", "sciences", "ledito"]
     # We retrieve the URL feeds for each page of category
     for cat in list_category:
         for i in range(2, 3):
@@ -80,11 +77,13 @@ def recovery_link_old_articles_lg(url_rss):
 
 
 def recovery_old_article_lg():
-    list_article = []
+    file_target = "/var/www/html/projet2018/data/clean/robot/"
     url_rss = "http://www.legorafi.fr/category/"
+    list_article = []
     links_article = recovery_link_old_articles_lg(url_rss)
     for link in links_article:
         new_article = recovery_information_lg(link)
+        print(new_article["title"])
         list_article.append(new_article)
     utils.create_json(file_target, list_article, "LeGorafi_articles/", "lg")
 

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-# Groupe 4
-# Realized by BENJEBRIA Sofian, DELOEUVRE Noémie, SEGUELA Morgan
+"""
+ Group 4
+ Realized by BENJEBRIA Sofian, DELOEUVRE Noémie, MOTHES Céline Mothes,
+             SEGUELA Morgan
+ V1 : create code
+ V1.1 : create function
+"""
 
-import os
-import datetime as date
-from bs4 import BeautifulSoup
-import requests
 import re
-import g4_utils_v2
+import g4_utils_v32 as utils
 
 # Path to change : target where we will store the json files
 file_target = "/var/www/html/projet2018/data/clean/robot/"
@@ -18,9 +19,7 @@ url_rss_gorafi = "http://www.legorafi.fr/feed/"
 
 # We retrieve the URL feeds for each new article
 # Each HTML-coded article is analyzed with beautiful soup
-req = requests.get(url_rss_gorafi)
-data = req.text
-soup = BeautifulSoup(data, "lxml")
+soup = utils.recovery_flux_url_rss(url_rss_gorafi)
 items = soup.find_all("item")
 article_gorafi = []
 
@@ -30,10 +29,7 @@ for item in items:
 file_json = []
 
 for article in article_gorafi:
-    req = requests.get(article)
-    data = req.text
-
-    soup = BeautifulSoup(data, "lxml")
+    soup = utils.recovery_flux_url_rss(article)
 
     balise_title = soup.title.string
     sep = balise_title.split("—")
@@ -62,15 +58,9 @@ for article in article_gorafi:
         if div.get("class") == ['content']:
             for p in div.find_all('p'):
                 contents += p.get_text() + " "
+    new_article = recovery_article(title, "Le Gorafi", author, date_p,
+                                   contents, theme)
 
-    new_article = {
-            "title": title,
-            "newspaper": newspaper,
-            "author": author,
-            "date_publi": date_p,
-            "theme": theme,
-            "content": contents
-    }
     if theme != "Magazine":
         file_json.append(new_article)
 
