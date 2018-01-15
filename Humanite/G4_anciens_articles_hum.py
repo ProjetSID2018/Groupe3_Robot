@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import os
-from G4_create_json import create_json
+import g4_utils_v32 as utils
 
 file_target = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
 os.makedirs(file_target, exist_ok=True)
@@ -42,41 +42,39 @@ for cat in list_category:
                 if meta.get("property") == 'og:title':
                     title = meta.get("content")
 
-            # Retrieving of the newspaper name
-            for meta in soup.find_all('meta'):
-                if meta.get("property") == 'og:site_name':
-                    newspaper = meta.get("content")
-
             # Retrieving of the theme
             for meta in soup.find_all('meta'):
                 if meta.get("property") == 'article:section':
                     theme = meta.get("content")
 
             # Retrieving of the author
+            author = []
             for h2 in soup.find_all('h2'):
                 for a in h2.find_all('a'):
                     for valeur in re.finditer('auteur', str(a.get("href"))):
-                        author = a.get_text()
+                        author.append(a.get_text())
 
             # Retrieving of the date of publication
             for meta in soup.find_all('meta'):
                 if meta.get("property") == 'article:published_time':
                     raw_date = meta.get("content")
                     date_p = raw_date[0:10]
-                    date_p = datetime.strptime(date_p, "%Y-%m-%d").strftime("%d/%m/%Y")
+                    date_p = datetime.strptime(date_p, "%Y-%m-%d")\
+                        .strftime("%d/%m/%Y")
 
             # Retrieving the content of the article
             contents = ""
-            for p in soup.find_all('p'):
-                for a in p.find_all('a'):
-                    if a.get_text() == "Lire la suite":
-                        a.string = ""
-                if p.get("class") == ['TX']:
-                    contents += p.get_text()
+            for div in soup.find_all('div'):
+                if div.get("class") == ['field', 'field-name-field-news-chapo', 'field-type-text-long', 'field-label-hidden']:
+                    for p in div.find_all('p'):
+                        contents += p.get_text()
+                if div.get("class") == ['field', 'field-name-field-news-text', 'field-type-text-long', 'field-label-hidden']:
+                    for p in div.find_all('p'):
+                        contents += p.get_text()
 
             new_article = {
                 "title": title,
-                "newspaper": newspaper,
+                "newspaper": "Humanite",
                 "date_publi": date_p,
                 "author": author,
                 "theme": theme,
@@ -92,4 +90,4 @@ if not os.path.exists(file_target+sources):
 
 
 # Call the create_json function
-create_json(file_target, file_json, sources, "hum")
+utils.create_json(file_target, file_json, sources, "hum")
