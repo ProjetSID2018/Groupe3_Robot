@@ -21,12 +21,14 @@ def recovery_information_lg(url):
         It retrieve for each article the title, newspaper, author, date, theme
     """
     soup = utils.recovery_flux_url_rss(url)
-    balise_title = soup.title.get_text()
+
+    # Retrieving the title
+    balise_title = soup.title.string
     sep = balise_title.split("—")
     title = unidecode.unidecode("—".join(sep[:-1]))
-    author = []
 
     # Retrieving of author and publication date
+    author = []
     for span in soup.find_all('span'):
         if span.get("class") == ['context']:
             author.append(span.a.get_text())
@@ -46,13 +48,12 @@ def recovery_information_lg(url):
         if div.get("class") == ['content']:
             for p in div.find_all('p'):
                 contents += p.get_text() + " "
-            contents = unidecode.unidecode(contents)
-            new_article = utils.recovery_article(title, "Le Gorafi", author,
-                                                 date_p, theme, contents)
-    return (new_article)
+    new_article = utils.recovery_article(title, "Le Gorafi", author, date_p,
+                                         contents, theme)
+    return(new_article)
 
 
-def recovery_link_old_articles_lg(url_rss):
+def recovery_link_new_articles_lg(url_rss):
     """
         Argument:
             url_rss : string
@@ -60,33 +61,29 @@ def recovery_link_old_articles_lg(url_rss):
             link_article = list
         Retrieving links of new articles thanks to the rss feed
     """
-    list_category = ["france/politique", "france/societe", "monde-libre",
-                     "france/economie", "culture", "people", "sports",
-                     "hi-tech", "sciences", "ledito"]
-    # We retrieve the URL feeds for each page of category
-    for cat in list_category:
-        for i in range(2, 3):
-            url_rss = url_rss + cat + "/page/" + str(i) + "/feed/"
-            soup = utils.recovery_flux_url_rss(url_rss)
-            items = soup.find_all("item")
-            link_article = []
-            # We retrieve all the link of articles for a given page
-            for item in items:
-                link_article.append(re.search(r"<link/>(.*)", str(item))[1])
-    return(link_article)
+    soup = utils.recovery_flux_url_rss(url_rss)
+    items = soup.find_all("item")
+    links_article_gorafi = []
+    for item in items:
+        links_article_gorafi.append(re.search(r"<link/>(.*)", str(item))[1])
+    return(links_article_gorafi)
 
 
-def recovery_old_article_lg():
+def recovery_new_article_lg():
+    """
+         Retrieving new articles thanks to the rss feed
+         and create for each article a json
+    """
     file_target = "/var/www/html/projet2018/data/clean/robot/"
-    url_rss = "http://www.legorafi.fr/category/"
+    url_rss = "http://www.legorafi.fr/feed/"
+    links_article = recovery_link_new_articles_lg(url_rss)
     list_article = []
-    links_article = recovery_link_old_articles_lg(url_rss)
-    for link in links_article:
-        new_article = recovery_information_lg(link)
-        print(new_article["title"])
-        list_article.append(new_article)
-    utils.create_json(file_target, list_article, "LeGorafi_articles/", "lg")
+    for link_article in links_article:
+        new_article = recovery_information_lg(link_article)
+        if new_article["theme"] != "Magazine":
+            list_article.append(new_article)
+    utils.create_json(file_target, list_article, "LeGorafi", "lg")
 
 
 if __name__ == '__main__':
-    recovery_old_article_lg()
+    recovery_new_article_lg()
