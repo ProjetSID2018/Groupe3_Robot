@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import unidecode
-import g4_utils_v31 as utilsg4
+import g4_utils_v32 as utilsg4
 
 
 def linkRSS(url_rss_lib):
@@ -84,7 +84,7 @@ def articlesList(link_rss):
                     content += p.get_text() + " "
             content = unidecode.unidecode(re.sub(r"\s\s+", " ", content))
 
-            new_article = utilsg4.recovery_article(title, newspaper, author, date_p, content, theme)
+            new_article = utilsg4.recovery_article(title, newspaper, [author], date_p, content, theme)
             list_article.append(new_article)
     return list_article
 

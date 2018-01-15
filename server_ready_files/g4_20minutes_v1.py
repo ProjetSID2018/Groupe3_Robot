@@ -1,12 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 
+=======
+""" -*- coding: utf-8 -*-
+ Groupe 4
+ SECK Mamadou
+ V0 : create code
+ V1.1 : create function
+"""
+>>>>>>> master
 import os
 import json
 import datetime as date
 from unidecode import unidecode
 import re
-import g4_utils_v31 as utils
+import g4_utils_v32 as utils
 
 
 
@@ -29,7 +38,7 @@ def get_article(url):
             "theme" : str
             }
     """
-    soup=utils.recovery_flux_urss(url)
+    soup=utils.recovery_flux_url_rss(url)
     article=soup.find("article")
     # Titre de l'article
     title=article.find("h1").get_text()
@@ -60,16 +69,16 @@ def is_article(url):
     """
         Prend en argument une adresse url et retourne vrai si la page contient une article et faux sinon
     """
-    soup=utils.recovery_flux_urss(url)
+    soup=utils.recovery_flux_url_rss(url)
     article=soup.find("article")
     return article != None
 
 
-def add_articles(file_target = "/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/" + str(date.datetime.now().date()) +"/"):
+def add_articles(file_target = "data/clean/robot/" + str(date.datetime.now().date()) +"/"):
     """
         it create a json for each new article
     """
-    soup = utils.recovery_flux_urss("http://www.20minutes.fr/feeds/rss-actu-france.xml")
+    soup = utils.recovery_flux_url_rss("http://www.20minutes.fr/feeds/rss-actu-france.xml")
     items = soup.find_all("item")
     articles=[]
     for item in items:

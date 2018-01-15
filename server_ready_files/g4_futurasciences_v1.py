@@ -7,7 +7,7 @@
 """
 import unidecode
 import re
-import g4_utils_v31 as utils
+import g4_utils_v32 as utils
 import datetime as date
 
 
@@ -19,7 +19,7 @@ def recovery_information_fusc(url):
             article : dictionary
         It retrieve for each article the title, newspaper, author, date, theme
     """
-    soup = utils.recovery_flux_rss(url)
+    soup = utils.recovery_flux_url_rss(url)
     # retrieve title
     title = unidecode.unidecode(soup.title.string)
     indice = title.find('|')

@@ -6,6 +6,7 @@
 # V2 : add function add_to_index, get_hash, already_exists, create_index
 # V3 : add function recovery_flux_urss, recovery_article
 # V31 : change a variable
+# V32 : modification of the recovery_article function
 import csv
 import datetime as date
 import json
@@ -65,7 +66,7 @@ def create_index():
     """Create the index for all the article saved
     """
     try:
-            
+
         source = "/var/www/html/projet2018/data/clean/robot/"
 
         dates_extract = os.listdir(source)
@@ -79,7 +80,8 @@ def create_index():
 
                 for article in os.listdir(source_newpaper):
                     u8 = "utf-8"
-                    with open(source_newpaper + article, "r", encoding=u8) as f:
+                    with open(source_newpaper + article, "r", encoding=u8) \
+                            as f:
                         data = json.load(f)
                         title = data["title"]
                         date_publi = data["date_publi"]
@@ -93,7 +95,7 @@ def create_index():
             f.write(",".join(hash_text)+",")
         print("creer")
 
-    except : 
+    except:
         with open("hash_text.csv", "w") as f:
             f.write(",")
             print("creer")
@@ -118,8 +120,10 @@ def create_json(file_target, list_article, sources, abbreviation):
     i = 1
     cur_date = date.datetime.now().date()
     for article in list_article:
-        if not already_exists(article["date_publi"], article["title"], article["newspaper"]):
-            add_to_index(article["date_publi"], article["title"], article["newspaper"])
+        if not already_exists(article["date_publi"], article["title"],
+                              article["newspaper"]):
+            add_to_index(article["date_publi"], article["title"],
+                         article["newspaper"])
             if "/" in sources:
                 file_art = file_target + sources + "art_" + abbreviation + "_"\
                     + str(i) + "_" + str(cur_date) + "_robot.json"
@@ -132,22 +136,27 @@ def create_json(file_target, list_article, sources, abbreviation):
             i += 1
 
 
-def recovery_article(title, newspaper, author, date_publi, content, theme):
+def recovery_article(title, newspaper, authors, date_publi, content, theme):
     """
     Arguments:
         title : string
         newspaper : string
-        author : list
+        authors : list
         date_publi : string
         content : string
         theme : string
     Return : dictionary containing title, newspaper,
     """
+    print(authors)
+    for ii in range(len(authors)):
+        authors[ii] = unidecode.unidecode(authors[ii])
+
     new_article = {
                 "title": unidecode.unidecode(title),
                 "newspaper": unidecode.unidecode(newspaper),
-                "author": unidecode.unidecode(author),
-                "date_publi": str(date.datetime.strptime(date_publi, "%d/%m/%Y").date()),
+                "author": authors,
+                "date_publi": str(date.datetime.strptime(date_publi,
+                                                         "%d/%m/%Y").date()),
                 "content": unidecode.unidecode(content),
                 "theme": unidecode.unidecode(theme)
         }
