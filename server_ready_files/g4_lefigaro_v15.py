@@ -47,7 +47,11 @@ def collect_url_articles(url_theme):
 
     list_url_articles = []
     for item in soup.find_all('item'):
-        if item.guid.get_text() != '':
+        if (item.guid.get_text() != ''
+                and 'http://bourse' not in item.guid.get_text()
+                and 'http://video' not in item.guid.get_text()
+                and 'http://immobilier' not in item.guid.get_text()
+                and 'http://avis-vin' not in item.guid.get_text()):
             list_url_articles.append(item.guid.get_text())
 
     return list_url_articles
@@ -62,7 +66,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
         soup = BeautifulSoup(data, 'lxml')
 
         title = soup.title.string
-
+        print(title)
         list_authors = []
         for a in soup.find_all('a'):
             if a.get("class") == ['fig-content-metas__author']:
@@ -98,7 +102,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 and date_publication != ''
                 and content != ''
                 and theme != ''):
-            print(title)
+            print("OK")
             new_article = utils.recovery_article(title, 'LeFigaro',
                                                  list_authors,
                                                  date_publication, content,
