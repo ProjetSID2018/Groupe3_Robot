@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
-# Groupe 4
-# Céline MOTHES
-# Morgan SEGUELA
-# V1 : function create_json
-# V2 : add function add_to_index, get_hash, already_exists, create_index
-# V3 : add function recovery_flux_urss, recovery_article
-# V31 : change a variable
-# V32 : modification of the recovery_article function
+"""
+ Groupe 4
+ Céline MOTHES
+ Morgan SEGUELA
+ V1 : function create_json
+ V2 : add function add_to_index, get_hash, already_exists, create_index
+ V3 : add function recovery_flux_urss, recovery_article
+ V31 : change a variable
+ V32 : modification of the recovery_article function
+ V33 : modification hash + function create_json
+ V34 : deleting date formatting in the create json function
+"""
 import csv
 import datetime as date
 import json
 import os
-import re
 import bs4
 import requests
+from hashlib import md5
 import unidecode
 
 
@@ -35,13 +39,8 @@ def get_hash(date_publi, text, newspaper):
         string -- a hash of the article
     """
 
-    date_publi = re.sub(r"/", "", date_publi)
-    text = re.sub(r"\W", "", text)
-    newspaper = re.sub(r"\W", "", newspaper)
-
-    text = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", text)
-    newspaper = re.sub(r"[^bcdfghjklmnpqrstvwxz]", "", newspaper)
-    return date_publi + text + newspaper
+    hash = md5("{} {} {}".format(date_publi, text, newspaper).encode())
+    return hash.hexdigest()
 
 
 def already_exists(date_publi, text, newspaper):
@@ -101,23 +100,29 @@ def create_index():
             print("creer")
 
 
-# Entree:
-#   file_target: string containing the path of the folder
-#   sources: string containing folder name
-#   list_article: list containing new articles
-#   abbreviation:string containing the journal abbreviation
-# Exit:
-#   one json file per item
-# For each article, the function creates a json file named after it:
-# art_abreviation_numeroArticle_datejour_robot. json.
-# It places the json file in the folder corresponding to the journal
-# if it exists otherwise it creates it.
-
-
 def create_json(file_target, list_article, sources, abbreviation):
-    if not os.path.exists(file_target+sources):
-        os.makedirs(file_target+sources)
-    i = 1
+    """
+    Entree:
+        file_target: string containing the path of the folder
+        sources: string containing folder name
+        list_article: list containing new articles
+        abbreviation:string containing the journal abbreviation
+    Exit:
+        one json file per item
+
+    For each article, the function creates a json file named after it:
+        art_abreviation_numeroArticle_datejour_robot. json.
+    It places the json file in the folder corresponding to the journal
+    if it exists otherwise it creates it.
+    """
+    os.makedirs(file_target+sources, exist_ok=True)
+    list_file = os.listdir(file_target+sources)
+    if list_file:
+        last_file = list_file[-1]
+        delimiter = last_file.split("_")
+        ii = int(delimiter[2]) + 1
+    else:
+        ii = 1
     cur_date = date.datetime.now().date()
     for article in list_article:
         if not already_exists(article["date_publi"], article["title"],
@@ -126,14 +131,14 @@ def create_json(file_target, list_article, sources, abbreviation):
                          article["newspaper"])
             if "/" in sources:
                 file_art = file_target + sources + "art_" + abbreviation + "_"\
-                    + str(i) + "_" + str(cur_date) + "_robot.json"
+                    + str(ii) + "_" + str(cur_date) + "_robot.json"
             else:
                 file_art = file_target + sources + "/" + "art_" + abbreviation\
-                 + "_" + str(i) + "_" + str(cur_date) + "_robot.json"
+                 + "_" + str(ii) + "_" + str(cur_date) + "_robot.json"
             with open(file_art, "w", encoding="UTF-8") as fic:
                 json.dump(article, fic, ensure_ascii=False)
 
-            i += 1
+            ii += 1
 
 
 def recovery_article(title, newspaper, authors, date_publi, content, theme):
@@ -147,16 +152,15 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         theme : string
     Return : dictionary containing title, newspaper,
     """
-    print(authors)
     for ii in range(len(authors)):
         authors[ii] = unidecode.unidecode(authors[ii])
 
     new_article = {
+                "id_art": get_hash(date_publi, title, newspaper),
                 "title": unidecode.unidecode(title),
                 "newspaper": unidecode.unidecode(newspaper),
                 "author": authors,
-                "date_publi": str(date.datetime.strptime(date_publi,
-                                                         "%d/%m/%Y").date()),
+                "date_publi": date_publi,
                 "content": unidecode.unidecode(content),
                 "theme": unidecode.unidecode(theme)
         }
@@ -175,7 +179,6 @@ def recovery_flux_url_rss(url_rss):
     data = req.text
     soup = bs4.BeautifulSoup(data, "lxml")
     return(soup)
-
 
 if __name__ == '__main__':
     create_index()
