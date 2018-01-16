@@ -93,6 +93,8 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 dates.append(date.datetime.strptime(valeur.group(0),
                                                     '%d/%m/%Y'))
         date_publication = date.datetime.strftime(min(dates), '%d/%m/%Y')
+        date_publication = str(date.datetime.strptime(date_publication,
+                                                      "%d/%m/%Y").date())
 
         content = ''
         for h2 in soup.find_all('h2'):
