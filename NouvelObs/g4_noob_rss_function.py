@@ -1,7 +1,7 @@
 # Group 4
 # DELOEUVRE Noémie
 
-import g4_utils_v31 as utils
+import g4_utils_v32 as utils
 import re
 from datetime import datetime
 import datetime as date
@@ -19,14 +19,13 @@ def recovery_information_noob(url_article):
     title = soup_article.title.get_text()
 
     # Retrieval of publication date
-    date_p = ""
-    for time in soup_article.find_all('time'):
-        if time.get("class") == ['date']:
-            find_valeur = re.compile('[0-9]{4}\/[0-9]{2}\/[0-9]{2}')
-            for valeur in find_valeur.finditer(str(time)):
-                date_p = valeur.group(0)
-                date_p = datetime.strptime(date_p, "%Y/%m/%d")\
-                    .strftime("%Y-%m-%d")
+    find_date = soup_article.find('time', attrs={"class": "date"})
+    for a in find_date.find_all('a'):
+        find_valeur = re.compile('[0-9]{4}\/[0-9]{2}\/[0-9]{2}')
+        for valeur in find_valeur.finditer(str(a.get("href"))):
+            date_p = valeur.group(0)
+            date_p = datetime.strptime(date_p, "%Y/%m/%d")\
+                .strftime("%Y-%m-%d")
 
     # Retrieval of the author of the article
     author = []
@@ -72,11 +71,11 @@ def recovery_link_new_articles_noob(url_rss):
 
     """
     soup = utils.recovery_flux_url_rss(url_rss)
-
+    
     liste_url = []
-    # Retrieving all urls of new RSS feeds of different categories
+    # Retrieving all urls of new RSS feeds of different categories                
     for a in soup.find_all('a'):
-        for valeur in re.finditer('sp-rss', str(a.get("class"))):
+        if a.get("class") == ['sprite-rss', 'sp-rss']:
             for valeur in re.finditer('www', str(a.get("href"))):
                 liste_url.append(a.get("href"))
 
@@ -99,7 +98,12 @@ def recovery_new_articles_noob(file_target="data/clean/robot/" +
 
         # We're picking up every new article in a list
         for item in items:
-            article_noob.append(re.search(r"<link/>(.*)", str(item))[1])
+            link_article = re.search(r"<link/>(.*)", str(item))[1]
+            link_article = link_article.split("<description>")
+            link_article = link_article[0]
+            article_noob.append(link_article)
+            for valeur in re.finditer("\/galeries\-photos\/", link_article):
+                article_noob.remove(link_article)
         # Each article is analized one by one
         for article in article_noob:
             file_json.append(recovery_information_noob(article))

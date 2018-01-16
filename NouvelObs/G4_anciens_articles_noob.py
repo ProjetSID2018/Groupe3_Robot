@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from datetime import datetime
-from G4_create_json import create_json
+import g4_utils_v32 as utils
 
 # Path to modify : target where we will store the json files
 fileTarget = "C:/Users/deloe/Desktop/Travail_ecole/M1_SID/Projet_inter_promo/"
@@ -46,11 +46,13 @@ for cat in list_category:
             title = soup_article.title.get_text()
 
             # Retrieval of publication date
-            for time in soup_article.find_all('time'):
-                if time.get("class") == ['date']:
-                    for valeur in re.finditer('[0-9]{4}\/[0-9]{2}\/[0-9]{2}', str(time)):
-                        date_p = valeur.group(0)
-                        date_p = datetime.strptime(date_p, "%Y/%m/%d").strftime("%d/%m/%Y")
+            find_date = soup_article.find('time', attrs={"class": "date"})
+            for a in find_date.find_all('a'):
+                find_valeur = re.compile('[0-9]{4}\/[0-9]{2}\/[0-9]{2}')
+                for valeur in find_valeur.finditer(str(a.get("href"))):
+                    date_p = valeur.group(0)
+                    date_p = datetime.strptime(date_p, "%Y/%m/%d")\
+                        .strftime("%Y-%m-%d")
 
             # Retrieval of the author of the article
             for div in soup_article.find_all('div'):
@@ -96,4 +98,4 @@ if not os.path.exists(fileTarget+sources):
     os.makedirs(fileTarget+sources)
 
 # Call the create_json function
-create_json(fileTarget, file_json, sources, "noob")
+utils.create_json(fileTarget, file_json, sources, "noob")
