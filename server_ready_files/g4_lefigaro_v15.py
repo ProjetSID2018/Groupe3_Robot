@@ -66,7 +66,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
         soup = BeautifulSoup(data, 'lxml')
 
         title = soup.title.string
-        print(title)
+
         list_authors = []
         for a in soup.find_all('a'):
             if a.get("class") == ['fig-content-metas__author']:
@@ -102,7 +102,6 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 and date_publication != ''
                 and content != ''
                 and theme != ''):
-            print("OK")
             new_article = utils.recovery_article(title, 'LeFigaro',
                                                  list_authors,
                                                  date_publication, content,
@@ -134,8 +133,8 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
 
         time.sleep(3)
 
-    utils.create_json(file_target, list_dictionnaires, 'lefigaro/',
-                      'lfi')
+        utils.create_json(file_target, list_dictionnaires, 'lefigaro/',
+                          'lfi')
 
 
 if __name__ == '__main__':

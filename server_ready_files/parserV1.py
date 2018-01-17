@@ -1,20 +1,16 @@
-import os
-import lxml.html as lh
-import json
 import datetime as date
-from bs4 import BeautifulSoup
-import requests
 import g4_futurasciences_v1 as g4_fusc
 import g4_liberation_V1 as g4_libe
 import g4_lemonde_V1 as g4_lmde
 import g4_ladepeche_V1 as g4_lade
 import g4_20minutes_v1 as g4_min
 import G4_humanite_v1 as g4_huma
-import g4_lepoint_v1 as lepoint
+import g4_lepoint_v11 as lepoint
+import g4_lefigaro_v15 as lefigaro
 
-target_file = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
+# target_file = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
 
-# target_file = "data/clean/robot/" + str(date.datetime.now().date()) +"/"
+target_file = "data/clean/robot/" + str(date.datetime.now().date()) +"/"
 
 deb = date.datetime.now()
 
@@ -23,6 +19,13 @@ try:
     print("Le Point OK")
 except:
     print("Erreur Le Point")
+    pass
+
+try:
+    lefigaro.recovery_new_articles_lfi(target_file)
+    print("Le Figaro OK")
+except:
+    print("Erreur Le Figaro")
     pass
 
 try:
