@@ -166,21 +166,21 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         }
     return(new_article)
 
-def is_empty(article,list_article):
+
+def is_empty(article):
     """
-    Argument : 
+    Argument :
         article : dictionary
-        list_article : list of dictionary
-    Return : 
-        list_article
-    Add the article if the conten, the publication date and the title
+    Add the article if the content, the publication date and the title
         are not empty
     """
-    if article["content"] != "" and article["title"]!= "" \
-        and article["date_publi"]!="":
-            list_article.append(article)
+    if (article["content"] != ""
+            and article["title"] != ""
+            and article["date_publi"] != ""):
+        return False
 
-    return(list_article)
+    return True
+
 
 def recovery_flux_url_rss(url_rss):
     """
@@ -194,6 +194,7 @@ def recovery_flux_url_rss(url_rss):
     data = req.text
     soup = bs4.BeautifulSoup(data, "lxml")
     return(soup)
+
 
 if __name__ == '__main__':
     create_index()
