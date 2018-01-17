@@ -8,13 +8,14 @@ from article import Article
 try:
     #minu=Minu("20 minutes","minu","http://www.20minutes.fr")
     tera=Tera("Telerama","tera","http://www.telerama.fr")
-    tera.add_article("se")
+    #tera.add_article("se")
     # ok print(len(tera.get_list_article()))
-    jm=JM(tera,"/home/etudiant/Documents/ProjetSID/preparation_v2/Art/" + str(date.datetime.now().date()) +"/","telerama")
+    jm=JM(tera,"/home/etudiant/Documents/ProjetSID/objet/Art/" + str(date.datetime.now().date()) +"/","telerama")
+    #jm=JM(minu,"/home/etudiant/Documents/ProjetSID/objet/Art/" + str(date.datetime.now().date()) +"/","minutes")
     # okart=Article("title","test",["Mr"],"12-1-2017","irem","cin")
     # ok print(art.id_art)
     # ok print(jm.already_exists(art))
-    #jm.create_json(new=False)
+    jm.create_json(new=False)
 
 except JournalException as je:
     print(je)

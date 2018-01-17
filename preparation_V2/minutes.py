@@ -7,7 +7,6 @@ class Minutes(Journal):
     def __init__(self, name_journal, _abbreviation, _base_url=""):
         Journal.__init__(self, name_journal, _abbreviation, _base_url)
 
-
     def find_article(self,url):
         soup=self.recovery_flux_url(url)
         article=soup.find("article")
@@ -29,7 +28,6 @@ class Minutes(Journal):
         content = regex.sub("", content)
         return Article(title,newspaper,authors,date_pub,content,theme)
     
-
     def find_links(self,new):
         urls=[]
         if new :
@@ -40,18 +38,15 @@ class Minutes(Journal):
                 urls.append(url)
         else:
             categories= {
-                "sport" : [
-                    "footbal","basketball","mercato","rugby","tennis","cyclisme","vendee_globe"
-                ],
+                "sport" : ["footbal","basketball","mercato","rugby","tennis","cyclisme","vendee_globe"],
+                "economie" : ["emploi","immobilier","auto","assurance"],
+                "high-tech" : ["apple","apple","facebook","jeux_video"],
+                "planete" : ["animaux","environnement","climat","ocean","plantes"],
                 "cinema" : "cinema","people" : "people","television" : "television","culture" : "culture",
                 "web" : "web","livres" : "livres","mode" : "mode","serie" : "serie","sortir" : "sortir",
-                "economie" : [
-                    "emploi","immobilier","auto","assurance"
-                ],
-                "sciences" : "sciences",
-                "high-tech" : [
-                    "apple","apple","facebook","jeux_video"
-                ]
+                "sciences" : "sciences", "bordeaux" : "bordeaux", "strasbourg" : "strasbourg", "toulouse" : "toulouse",
+                "lille" : "lille","lyon" : "lyon","marseille" : "marseille", "montpellier" : "montpellier", "paris" : "paris",
+                "nice" : "nice", "nantes" : "nantes", "rennes" : "rennes"
             }
             for k,v in categories.items():
                 url=self.base_url+"/"+k+"/"
@@ -61,7 +56,6 @@ class Minutes(Journal):
                 else:
                     urls.append(url)
         return urls
-
 
     def find_articles(self,url):
         """
