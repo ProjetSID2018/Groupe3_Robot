@@ -10,7 +10,7 @@
  V32 : modification of the recovery_article function
  V33 : modification hash + function create_json
  V34 : deleting date formatting in the create json function
- V40 : Add the function content_is_empty
+ V40 : Add the function is_empty
 """
 import csv
 import datetime as date
@@ -166,17 +166,20 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         }
     return(new_article)
 
-def content_is_empty(article,list_article):
+def is_empty(article,list_article):
     """
     Argument : 
         article : dictionary
         list_article : list of dictionary
     Return : 
         list_article
-    Add the article if the content is not empty
+    Add the article if the conten, the publication date and the title
+        are not empty
     """
-    if article["content"] != "":
+    if article["content"] != "" and article["title"]!= "" \
+        and article["date_publi"]!="":
             list_article.append(article)
+
     return(list_article)
 
 def recovery_flux_url_rss(url_rss):
