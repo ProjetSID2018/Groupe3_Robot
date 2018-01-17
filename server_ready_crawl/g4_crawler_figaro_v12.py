@@ -9,7 +9,7 @@ V 1.2
 from bs4 import BeautifulSoup
 import requests
 import re
-import g4_utils_v34 as utils
+import g4_utils_v40 as utils
 import datetime as date
 import time
 
@@ -119,20 +119,15 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 for p in div.find_all('p'):
                     content += p.get_text() + " "
 
-        if (title != ''
-                and len(list_authors) != 0
-                and date_publication != ''
-                and content != ''
-                and theme != ''):
-            print(title)
-            new_article = utils.recovery_article(title, 'LeFigaro',
-                                                 list_authors,
-                                                 date_publication, content,
-                                                 theme)
+        new_article = utils.recovery_article(title, 'LeFigaro',
+                                             list_authors,
+                                             date_publication, content,
+                                             theme)
+        if not utils.is_empty(new_article):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lfi(file_target="data/clean/robot/" +
+def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -141,9 +136,9 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
     """
     list_url_themes = collect_url_themes("http://www.lefigaro.fr/")
 
-    list_dictionnaires = []
-
     for url_theme in list_url_themes:
+
+        list_dictionnaires = []
 
         theme = re.search("http://www.lefigaro.fr/(.*)", url_theme)[1]
         theme = re.sub("/", "", theme)
@@ -160,8 +155,8 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
 
         time.sleep(3)
 
-    utils.create_json(file_target, list_dictionnaires, 'lefigaro/',
-                      'lfi')
+        utils.create_json(file_target, list_dictionnaires, 'leFigaro/',
+                          'lfi')
 
 
 if __name__ == '__main__':
