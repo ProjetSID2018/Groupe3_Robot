@@ -8,9 +8,9 @@ import G4_humanite_v1 as g4_huma
 import g4_lepoint_v11 as lepoint
 import g4_lefigaro_v15 as lefigaro
 
-# target_file = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
+target_file = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
 
-target_file = "data/clean/robot/" + str(date.datetime.now().date()) +"/"
+# target_file = "data/clean/robot/" + str(date.datetime.now().date()) +"/"
 
 deb = date.datetime.now()
 
