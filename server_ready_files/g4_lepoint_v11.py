@@ -11,7 +11,7 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import g4_utils_v34 as utils
+import g4_utils_v33 as utils
 
 
 def collect_url_themes(url_rss_lepoint):
@@ -86,13 +86,11 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             if div.get('class') == ['art-text']:
                 for p in div.find_all('p'):
                     content += p.get_text()+" "
-        print(title)
         if (title != ''
                 and len(list_authors) != 0
                 and date_publication != ''
                 and content != ''
                 and theme != ''):
-            print("OK")
             new_article = utils.recovery_article(title, 'LePoint',
                                                  list_authors,
                                                  date_publication, content,
@@ -116,18 +114,16 @@ def recovery_new_articles_lpt(file_target="data/clean/robot/" +
     for url_theme in list_url_themes:
 
         theme = re.search("http://www.lepoint.fr/(.*)/rss.xml", url_theme)[1]
-        print("---------------------------"+theme+"------------------------")
 
         collect_url_articles(list_url_articles, url_theme)
         for index_page in range(2, 10):
             collect_url_articles(list_url_articles,
                                  url_theme+"index_"+str(index_page)+".php")
 
+            utils.create_json(file_target, list_dictionnaires, "LePointRSS/",
+                              "lpt")
         collect_articles(list_dictionnaires, list_url_articles, theme)
         time.sleep(3)
-
-    utils.create_json(file_target, list_dictionnaires, "LePointRSS/",
-                      "lpt")
 
 
 if __name__ == '__main__':

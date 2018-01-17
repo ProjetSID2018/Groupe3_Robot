@@ -1,21 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
-
-=======
 """ -*- coding: utf-8 -*-
  Groupe 4
  SECK Mamadou
  V0 : create code
  V1.1 : create function
 """
->>>>>>> master
 import os
 import json
 import datetime as date
 from unidecode import unidecode
 import re
-import g4_utils_v32 as utils
+import g4_utils_v33 as utils
 
 
 

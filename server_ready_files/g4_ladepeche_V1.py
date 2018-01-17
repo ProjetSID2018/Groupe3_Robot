@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import unidecode
-import g4_utils_v32 as utilsg4
+import g4_utils_v33 as utilsg4
 import time
 
 #fileTarget = "C:/Users/lea/Desktop/PROJET/"
@@ -39,9 +39,12 @@ def recovery_new_articles_ld(file_target = "data/clean/robot/" + str(date.dateti
     for article in links:
         new_article = recovery_information_ld(article)
         list_articles.append(new_article)
-        if i == 50:
-            break
         i += 1
+        if i == 50:
+            utilsg4.create_json(file_target, list_articles, "ladepeche/", "LD")
+
+            i = 0
+            list_articles = []
             
     utilsg4.create_json(file_target, list_articles, "ladepeche/", "LD")
 

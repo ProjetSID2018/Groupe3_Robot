@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import unidecode
-import g4_utils_v32 as utilsg4
+import g4_utils_v33 as utilsg4
 import html
 
 
@@ -126,14 +126,21 @@ def recuperation_info_libe(file_target = "data/clean/robot/" + str(date.datetime
     link_rss = get_rss_infos()
     
     list_articles = []
+    i = 0
 
     for lr in link_rss:
+        i += 1
         if "www.liberation.fr" in lr:
             informations = get_information(lr)
         else:
             informations = None
         if informations:
             list_articles.append(get_information(lr))
+        if i > 49:
+            i = 0
+            utilsg4.create_json(file_target, list_articles, source, "libe")
+            list_articles = []
+
     utilsg4.create_json(file_target, list_articles, source, "libe")
 
     

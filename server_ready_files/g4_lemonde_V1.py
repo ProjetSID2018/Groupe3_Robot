@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import unidecode
-import g4_utils_v32 as utilsg4
+import g4_utils_v33 as utilsg4
 
 
 def linkRSS(url_rss_lib):
@@ -36,57 +36,49 @@ def linkRSS(url_rss_lib):
     return link_rss
 
 
-def articlesList(link_rss):
-    list_article = []
-    for lr in link_rss:
+def info_articles(article_link):
+    req = requests.get(article_link)
+    data = req.text
+    soup = BeautifulSoup(data, "lxml")
 
-        if "/article/" in lr:
-            
-            req = requests.get(lr)
-            data = req.text
-            soup = BeautifulSoup(data, "lxml")
+    title = unidecode.unidecode(soup.find('title').string)
 
-            title = unidecode.unidecode(soup.find('title').string)
+    newspaper = "Le Monde"
 
-            # newspaper name
-            for p1 in soup.find_all('span'):
-                if p1.get("id") == "publisher":
-                    newspaper = p1.string
+    # Article theme
+    if(soup.find("li", class_="ariane z2")):
+        theme = soup.find("li", class_="ariane z2").find("a").get_text()
+    else:
+        theme = 'Forum'
 
-            # Article theme
-            if(soup.find("li", class_="ariane z2")):
-                theme = soup.find("li", class_="ariane z2").find("a").get_text()
-            else:
-                theme = 'Forum'
+    # Author of the article
+    if(soup.find("span", class_="auteur")):
+        if(soup.find("span", class_="auteur").a):
+            author = soup.find("span", class_="auteur").find("a").get_text()
+        else:
+            author = soup.find("span", class_="auteur").get_text()
+        author = re.sub(r"\s\s+", " ", author)
+        author = re.sub(r"^ ", "", author)
+    else:
+        author = ""
 
-            # Author of the article
-            if(soup.find("span", class_="auteur")):
-                if(soup.find("span", class_="auteur").a):
-                    author = soup.find("span", class_="auteur").find("a").get_text()
-                else:
-                    author = soup.find("span", class_="auteur").get_text()
-                author = re.sub(r"\s\s+", " ", author)
-                author = re.sub(r"^ ", "", author)
-            else:
-                author = "EN LIVE"
+    # publication date
+    da = re.search(r"\d{4}-\d{2}\-\d{2}", soup.find("time").get("datetime"))[0]
+    if(da):
+        date_p = date.datetime.strptime(da, "%Y-%m-%d").strftime("%d/%m/%Y")
+    else:
+        date_p = str(date.datetime.now().strftime("%d/%m/%Y"))
 
-            # publication date
-            da = re.search(r"\d{4}-\d{2}\-\d{2}", soup.find("time").get("datetime"))[0]
-            if(da):
-                date_p = date.datetime.strptime(da, "%Y-%m-%d").strftime("%d/%m/%Y")
-            else:
-                date_p = str(date.datetime.now().strftime("%d/%m/%Y"))
+    # Article content
+    content = ""
+    for div in soup.find_all('div'):
+        for p in div.find_all('p'):
+            content += p.get_text() + " "
+    content = unidecode.unidecode(re.sub(r"\s\s+", " ", content))
 
-            # Article content
-            content = ""
-            for div in soup.find_all('div'):
-                for p in div.find_all('p'):
-                    content += p.get_text() + " "
-            content = unidecode.unidecode(re.sub(r"\s\s+", " ", content))
+    new_article = utilsg4.recovery_article(title, newspaper, [author], date_p, content, theme)                
 
-            new_article = utilsg4.recovery_article(title, newspaper, [author], date_p, content, theme)
-            list_article.append(new_article)
-    return list_article
+    return new_article
 
 
 def recent(url):
@@ -129,11 +121,24 @@ def recuperation_info_lmde(file_target = "data/clean/robot/" + str(date.datetime
     url_rss_lib = "http://www.lemonde.fr/rss/"
     abbreviation = "lmde"
     url = "http://www.lemonde.fr"
+    
+    list_articles = []
+    i = 0
+
     listRSS = linkRSS(url_rss_lib)
-    list_articles = articlesList(listRSS)
-    # utilsg4.create_json(file_target, list_articles, file_target_source, abbreviation)
-    links = recent(url)
-    list_articles.extend(articlesList(links))
+    for article_link in listRSS:
+        if "/article/" in article_link:
+            i += 1
+            list_articles.append(info_articles(article_link))
+            
+            if i == 20:
+                utilsg4.create_json(file_target, list_articles, source, abbreviation)
+                i = 0
+                list_articles = []
+
+
+    # links = recent(url)
+    # list_articles.extend(articlesList(links))
     utilsg4.create_json(file_target, list_articles, source, abbreviation)
 
 
