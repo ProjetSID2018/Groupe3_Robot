@@ -14,8 +14,8 @@ import g4_new_gorafi_v1 as g4_gora
 import g4_nouveaux_articles_hum as g4_huma
 import g4_latribune_V1 as g4_latri
 import g4_ladepeche_V1 as g4_lade
-import g4_lepoint_v11 as lepoint
-import g4_lefigaro_v15 as lefigaro
+import g4_lepoint_v11 as g4_lepo
+import g4_lefigaro_v15 as g4_lefi
 
 
 def activation(rss_function, newspaper):
@@ -61,6 +61,10 @@ activation(g4_huma.recovery_new_articles_hum, "Humanite")
 activation(g4_noob.recovery_new_articles_noob, "Nouvel Obs")
 
 activation(g4_latri.recuperation_info_lt, "La Tribune")
+
+activation(g4_lepo.recovery_new_articles_lpt, "Le Point")
+
+activation(g4_lefi.recovery_new_articles_lfi, "Le Figaro")
 
 DELTA = date.datetime.now() - DEB
 print(DELTA.total_seconds())
