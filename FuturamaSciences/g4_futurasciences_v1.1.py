@@ -20,6 +20,7 @@ def recovery_information_fusc(url):
     """
     soup = utils.recovery_flux_urss(url)
     # retrieve title
+    title = ""
     title = unidecode.unidecode(soup.title.string)
     indice = title.find('|')
     if indice != -1:
@@ -32,16 +33,17 @@ def recovery_information_fusc(url):
             author.append(h3.get_text())
 
     # retrieve date
+    publi_date = ""
     publi_date = soup.time.string[11:]
 
-    content = ''
+    content = ""
     for p in soup.find_all('p'):
         for p2 in re.finditer('py0p5', p.get('class')[-1]):
             content += p.get_text()
     content = unidecode.unidecode(content)
 
     # retrieve theme
-    theme = ''
+    theme = ""
     for meta in soup.find_all('meta'):
         if meta.get('property') == 'og:url':
             tmp = meta.get('content')[32:]
