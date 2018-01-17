@@ -10,7 +10,7 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import g4_utils_v33 as utils
+import g4_utils_v40 as utils
 import time
 
 
@@ -86,7 +86,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                                       str(marker_time)):
                 date_publication = valeur.group(0)
         date_publication = str(date.datetime.strptime(date_publication,
-                                                      "%d/%m/%Y").date().strftime("%d/%m/%Y"))
+                                                      "%d/%m/%Y").date())
 
         content = ''
         for p in soup.find_all('p'):
@@ -97,19 +97,16 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             if div.get("class") == ['fig-content__body']:
                 for p in div.find_all('p'):
                     content += p.get_text() + " "
-        if (title != ''
-                and len(list_authors) != 0
-                and date_publication != ''
-                and content != ''
-                and theme != ''):
-            new_article = utils.recovery_article(title, 'LeFigaro',
-                                                 list_authors,
-                                                 date_publication, content,
-                                                 theme)
+
+        new_article = utils.recovery_article(title, 'LeFigaro',
+                                             list_authors,
+                                             date_publication, content,
+                                             theme)
+        if not utils.is_empty(new_article):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lfi(file_target="data/clean/robot/" +
+def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -118,13 +115,14 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
     """
     list_url_themes = collect_url_themes('http://www.lefigaro.fr/rss/')
 
-    list_dictionnaires = []
-
     for url_theme in list_url_themes:
+
+        list_dictionnaires = []
 
         theme = re.search("http://www.lefigaro.fr/rss/figaro_(.*).xml",
                           url_theme)[1]
         theme = re.sub("/", "", theme)
+        print("---------------------" + theme + "---------------------------")
 
         list_url_articles = collect_url_articles(url_theme)
 
@@ -132,7 +130,7 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
 
         time.sleep(3)
 
-        utils.create_json(file_target, list_dictionnaires, 'lefigaro/',
+        utils.create_json(file_target, list_dictionnaires, 'leFigaro/',
                           'lfi')
 
 

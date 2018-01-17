@@ -11,11 +11,16 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import g4_utils_v33 as utils
+import g4_utils_v40 as utils
 
 
 def collect_url_themes(url_rss_lepoint):
-
+    """Create a list containing the URL or the differents themes
+    Arguments:
+        url_rss_lepoint {string} -- url of the rss
+    Returns:
+        list_url_themes {list} -- list of URL (string)
+    """
     req = requests.get(url_rss_lepoint)
     data = req.text
     soup = BeautifulSoup(data, "lxml")
@@ -68,6 +73,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 for span in div.find_all('span'):
                     name = span.get_text()
                     name = re.sub('Par', '', name)
+                    name = re.sub("\s\s+", "", name)
         list_authors.append(name)
 
         dates = []
@@ -77,6 +83,8 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 dates.append(date.datetime.strptime(valeur.group(0),
                                                     '%d/%m/%Y'))
         date_publication = date.datetime.strftime(min(dates), '%d/%m/%Y')
+        date_publication = str(date.datetime.strptime(date_publication,
+                                                      "%d/%m/%Y").date())
 
         content = ''
         for h2 in soup.find_all('h2'):
@@ -87,19 +95,15 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 for p in div.find_all('p'):
                     content += p.get_text()+" "
 
-        if (title != ''
-                and len(list_authors) != 0
-                and date_publication != ''
-                and content != ''
-                and theme != ''):
-            new_article = utils.recovery_article(title, 'LePoint',
-                                                 list_authors,
-                                                 date_publication, content,
-                                                 theme)
+        new_article = utils.recovery_article(title, 'LePoint',
+                                             list_authors,
+                                             date_publication, content,
+                                             theme)
+        if not utils.is_empty(new_article):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lpt(file_target="data/clean/robot/" +
+def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -110,24 +114,24 @@ def recovery_new_articles_lpt(file_target="data/clean/robot/" +
 
     list_url_articles = []
 
-    list_dictionnaires = []
-
     for url_theme in list_url_themes:
 
+        list_dictionnaires = []
+
         theme = re.search("http://www.lepoint.fr/(.*)/rss.xml", url_theme)[1]
+        print("---------------------------"+theme+"------------------------")
 
         collect_url_articles(list_url_articles, url_theme)
         for index_page in range(2, 10):
             collect_url_articles(list_url_articles,
                                  url_theme+"index_"+str(index_page)+".php")
 
-            utils.create_json(file_target, list_dictionnaires, "LePointRSS/",
-                              "lpt")
         collect_articles(list_dictionnaires, list_url_articles, theme)
         time.sleep(3)
 
-        utils.create_json(file_target, list_dictionnaires, "LePointRSS/",
+        utils.create_json(file_target, list_dictionnaires, "LePoint/",
                           "lpt")
+
 
 if __name__ == '__main__':
     recovery_new_articles_lpt()
