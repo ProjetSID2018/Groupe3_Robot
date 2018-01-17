@@ -14,6 +14,8 @@ import g4_new_gorafi_v1 as g4_gora
 import g4_nouveaux_articles_hum as g4_huma
 import g4_latribune_V1 as g4_latri
 import g4_ladepeche_V1 as g4_lade
+import g4_lepoint_v11 as lepoint
+import g4_lefigaro_v15 as lefigaro
 
 
 def activation(rss_function, newspaper):

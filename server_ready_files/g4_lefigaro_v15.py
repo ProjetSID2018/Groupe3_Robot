@@ -66,6 +66,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
         soup = BeautifulSoup(data, 'lxml')
 
         title = soup.title.string
+
         list_authors = []
         for a in soup.find_all('a'):
             if a.get("class") == ['fig-content-metas__author']:

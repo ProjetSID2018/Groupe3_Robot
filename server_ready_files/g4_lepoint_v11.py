@@ -86,6 +86,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             if div.get('class') == ['art-text']:
                 for p in div.find_all('p'):
                     content += p.get_text()+" "
+
         if (title != ''
                 and len(list_authors) != 0
                 and date_publication != ''
@@ -95,7 +96,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                                                  list_authors,
                                                  date_publication, content,
                                                  theme)
-        list_dictionaries.append(new_article)
+            list_dictionaries.append(new_article)
 
 
 def recovery_new_articles_lpt(file_target="data/clean/robot/" +
@@ -125,6 +126,8 @@ def recovery_new_articles_lpt(file_target="data/clean/robot/" +
         collect_articles(list_dictionnaires, list_url_articles, theme)
         time.sleep(3)
 
+        utils.create_json(file_target, list_dictionnaires, "LePointRSS/",
+                          "lpt")
 
 if __name__ == '__main__':
     recovery_new_articles_lpt()
