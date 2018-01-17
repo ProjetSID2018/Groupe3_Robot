@@ -1,73 +1,70 @@
+"""
+@author Morgan Seguela
+V1 : Tout les journaux
+"""
 import datetime as date
+
 import g4_futurasciences_v1 as g4_fusc
 import g4_liberation_V1 as g4_libe
 import g4_lemonde_V1 as g4_lmde
-import g4_ladepeche_V1 as g4_lade
 import g4_20minutes_v1 as g4_min
-import G4_humanite_v1 as g4_huma
-import g4_lepoint_v11 as lepoint
-import g4_lefigaro_v15 as lefigaro
+import g4_nouvel_obs_V1 as g4_noob
+import g4_telerama_v1 as g4_tele
+import g4_new_gorafi_v1 as g4_gora
+import g4_nouveaux_articles_hum as g4_huma
+import g4_latribune_V1 as g4_latri
+import g4_ladepeche_V1 as g4_lade
+import g4_lepoint_v11 as g4_lepo
+import g4_lefigaro_v15 as g4_lefi
 
-target_file = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) +"/"
 
-# target_file = "data/clean/robot/" + str(date.datetime.now().date()) +"/"
+def activation(rss_function, newspaper):
+    """active les fonctions de collecte
+    
+    Arguments:
+        rss_function {func} -- Collecting Function
+        newspaper {string} -- Newspaper Name
+    """
 
-deb = date.datetime.now()
+    target_file = "/var/www/html/projet2018/data/clean/robot/" + \
+        str(date.datetime.now().date()) + "/"
 
-try:
-    lepoint.recovery_new_articles_lpt(target_file)
-    print("Le Point OK")
-except:
-    print("Erreur Le Point")
-    pass
+    # target_file = "data/clean/robot/" + str(date.datetime.now().date()) +"/"
 
-try:
-    lefigaro.recovery_new_articles_lfi(target_file)
-    print("Le Figaro OK")
-except:
-    print("Erreur Le Figaro")
-    pass
+    try:
+        rss_function(target_file)
+        print(newspaper + " OK")
+    except Exception as exception:
+        print(exception)
+        print(type(exception).__name__)
+        print("Erreur " + newspaper)
 
-try:
-    g4_fusc.recovery_new_articles_fusc(target_file)
-    print("Futurascience OK")
-except:
-    print("Erreur Futurascience")
-    pass
-try:
-    g4_libe.recuperation_info_libe(target_file)
-    print("Liberation OK")
-except:
-    print("Erreur Liberation")
-    pass
 
-try:
-    g4_lmde.recuperation_info_lmde(target_file)
-    print("Le Monde OK")
-except:
-    print("Erreur Le Monde")
-    pass
+DEB = date.datetime.now()
 
-try:
-    g4_lade.recovery_new_articles_ld(target_file)
-    print("La Depeche OK")
-except:
-    print("Erreur La Depeche")
-    pass
+activation(g4_fusc.recovery_new_articles_fusc, "Futura Science")
 
-try:
-    g4_min.add_articles(target_file)
-    print("20 Minutes OK")
-except:
-    print("Erreur 20 Minutes")
-    pass
+activation(g4_libe.recuperation_info_libe, "Liberation")
 
-try:
-    g4_huma.recuperation_info_hmnt(target_file)
-    print("L'Humanité OK")
-except:
-    print("Erreur L'Humanité")
-    pass
+activation(g4_lmde.recuperation_info_lmde, "Le Monde")
 
-delta = date.datetime.now() - deb
-print(delta.total_seconds())
+activation(g4_lade.recovery_new_articles_ld, "La Depeche")
+
+activation(g4_min.add_articles, "20 Minutes")
+
+activation(g4_tele.add_articles, "Telerama")
+
+activation(g4_gora.recovery_new_article_lg, "Le Gorafi")
+
+activation(g4_huma.recovery_new_articles_hum, "Humanite")
+
+activation(g4_noob.recovery_new_articles_noob, "Nouvel Obs")
+
+activation(g4_latri.recuperation_info_lt, "La Tribune")
+
+activation(g4_lepo.recovery_new_articles_lpt, "Le Point")
+
+activation(g4_lefi.recovery_new_articles_lfi, "Le Figaro")
+
+DELTA = date.datetime.now() - DEB
+print(DELTA.total_seconds())
