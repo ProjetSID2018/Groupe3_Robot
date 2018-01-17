@@ -61,7 +61,7 @@ def recovery_information_noob(url_article):
     return(article)
 
 
-def recovery_link_new_articles_noob(url_rss):
+def recovery_link_new_articles_noob_rss(url_rss):
     """
         Arguments:
             - url of the page containing feed links for
@@ -71,9 +71,9 @@ def recovery_link_new_articles_noob(url_rss):
 
     """
     soup = utils.recovery_flux_url_rss(url_rss)
-    
+
     liste_url = []
-    # Retrieving all urls of new RSS feeds of different categories                
+    # Retrieving all urls of new RSS feeds of different categories
     for a in soup.find_all('a'):
         if a.get("class") == ['sprite-rss', 'sp-rss']:
             for valeur in re.finditer('www', str(a.get("href"))):
@@ -82,15 +82,16 @@ def recovery_link_new_articles_noob(url_rss):
     return(liste_url)
 
 
-def recovery_new_articles_noob(file_target="data/clean/robot/" +
-                               str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_noob_rss(file_target="data/clean/robot/" +
+                                   str(date.datetime.now().date()) + "/"):
     """
         Returns:
             - creation of a json for each new article
     """
     file_json = []
     # Each url is analized one by one
-    list_url = recovery_link_new_articles_noob("http://www.nouvelobs.com/rss/")
+    list_url = recovery_link_new_articles_noob_rss("http://www.nouvelobs." +
+                                                   "com/rss/")
     for url in list_url:
         soup_url = utils.recovery_flux_url_rss(url)
         items = soup_url.find_all("item")
@@ -112,4 +113,4 @@ def recovery_new_articles_noob(file_target="data/clean/robot/" +
 
 
 if __name__ == '__main__':
-    recovery_new_articles_noob()
+    recovery_new_articles_noob_rss()

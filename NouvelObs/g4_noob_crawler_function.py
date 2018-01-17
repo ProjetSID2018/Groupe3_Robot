@@ -61,7 +61,7 @@ def recovery_information_noob(url_article):
     return(article)
 
 
-def recovery_link_new_articles_noob():
+def recovery_link_new_articles_noob_crawler():
     """
         Arguments:
             - url of the page containing feed links for
@@ -93,15 +93,15 @@ def recovery_link_new_articles_noob():
     return(article_noob)
 
 
-def recovery_new_articles_noob(file_target="data/clean/robot/" +
-                               str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
+                                       str(date.datetime.now().date()) + "/"):
     """
         Returns:
             - creation of a json for each new article
     """
 
     file_json = []
-    article_noob = recovery_link_new_articles_noob()
+    article_noob = recovery_link_new_articles_noob_crawler()
 
     # Each article is analized one by one
     for article in article_noob:
@@ -112,4 +112,4 @@ def recovery_new_articles_noob(file_target="data/clean/robot/" +
 
 
 if __name__ == '__main__':
-    recovery_new_articles_noob()
+    recovery_new_articles_noob_crawler()
