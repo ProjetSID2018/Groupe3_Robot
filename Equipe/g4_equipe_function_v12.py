@@ -1,7 +1,7 @@
 # Group 4
-# DELOEUVRE Noémie
+# DELOEUVRE Noémie, BENJEBRIA Sofian
 
-import g4_utils_v31 as utils
+import g4_utils_v34 as utils
 import re
 from datetime import datetime
 import datetime as date
@@ -17,20 +17,17 @@ def recovery_information_equipe(url_article):
     soup_article = utils.recovery_flux_url_rss(url_article)
 
     # Retrieving of title
-    balise_title = soup_article.title.string
-    sep = balise_title.split(" — ")
+    balise_title = soup_article.title.get_text()
+    sep = balise_title.split(" - ")
     title = sep[0]
-
-    # Retrieving of title
-    balise_title = soup_article.title.string
-    sep = balise_title.split(" — ")
-    title = sep[0]
+    title = title.encode("latin1").decode()
 
     # Retrieving of the author
     author = []
     for meta in soup_article.find_all('meta'):
         if meta.get("name") == 'Author':
-            author.append(meta.get("content"))
+            aut = meta.get("content")
+            author.append(aut.encode("latin1").decode())
 
     # Retrieving of date of publication
     for div in soup_article.find_all('div'):
@@ -40,23 +37,32 @@ def recovery_information_equipe(url_article):
                     raw_date = t.get("datetime")
                     date_p = raw_date[0:10]
                     date_p = datetime.strptime(date_p, "%Y-%m-%d")\
-                        .strftime("%d/%m/%Y")
+                        .strftime("%Y/%m/%d")
 
     # Retrieving of the artical theme
     theme = ""
     for div in soup_article.find_all('div'):
         if div.get("class") == ['navigation__sousmenu']:
             theme = div.get("libelle")
+            theme = theme.encode("latin1").decode()
 
     # Retrieving the content of the article
     for div in soup_article.find_all('div'):
         if div.get("itemprop") == 'mainEntityOfPage':
-            for a in div.find_all('a'):
-                a.string = ""
+            for div2 in div.find_all('div'):
+                for valeur in re.finditer('lire-aussi',
+                                          str(div2.get("class"))):
+                    div2.string = ""
+                for valeur2 in re.finditer('paragraphe__exergue',
+                                           str(div2.get("class"))):
+                    div2.string = ""
             for span in div.find_all('span'):
                 span.string = ""
+            for block in div.find_all('blockquote'):
+                block.string = ""
             contents = div.get_text()
     contents = re.sub(r"\s\s+", " ", contents)
+    contents = contents.replace('°', ' ° ')
 
     article = utils.recovery_article(title, 'Equipe',
                                      author, date_p, contents, theme)
@@ -107,7 +113,7 @@ def recovery_new_articles_equipe(file_target="data/clean/robot/" +
             file_json.append(recovery_information_equipe(article))
 
     utils.create_json(file_target, file_json, "Equipe_nouveaux/",
-                      "noob")
+                      "equi")
 
 
 if __name__ == '__main__':
