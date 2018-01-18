@@ -1,7 +1,7 @@
 # Group 4
 # DELOEUVRE Noémie
 
-import g4_utils_v32 as utils
+import g4_utils_v40 as utils
 import re
 from datetime import datetime
 import datetime as date
@@ -105,7 +105,9 @@ def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
 
     # Each article is analized one by one
     for article in article_noob:
-        file_json.append(recovery_information_noob(article))
+        new_article = recovery_information_noob(article)
+        if utils.is_empty(new_article) is False:
+            file_json.append(new_article)
 
     utils.create_json(file_target, file_json, "NouvelObs_crawler/",
                       "noob")
