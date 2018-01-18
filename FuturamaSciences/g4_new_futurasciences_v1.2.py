@@ -44,7 +44,6 @@ def recovery_information_fusc(url):
     for p in soup.find_all('p'):
         for p2 in re.finditer('py0p5', p.get('class')[-1]):
             content += p.get_text()
-    print(content)
     content = unidecode.unidecode(content)
 
     # retrieve theme
