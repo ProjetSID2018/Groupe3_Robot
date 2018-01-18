@@ -61,59 +61,57 @@ def recovery_information_noob(url_article):
     return(article)
 
 
-def recovery_link_new_articles_noob_rss(url_rss):
+def recovery_link_new_articles_noob_crawler():
     """
         Arguments:
             - url of the page containing feed links for
             the different categories
         Returns :
             - list of urls of the different categories
-
     """
-    soup = utils.recovery_flux_url_rss(url_rss)
+    list_category = ["politique", "monde", "economie", "culture",
+                     "editos-et-chroniques", "debat"]
 
-    liste_url = []
-    # Retrieving all urls of new RSS feeds of different categories
-    for a in soup.find_all('a'):
-        if a.get("class") == ['sprite-rss', 'sp-rss']:
-            if re.search('www', str(a.get("href"))):
-                liste_url.append(a.get("href"))
+    article_noob = []
+    for cat in list_category:
+        # We retrieve the URL feeds for each page of article
+        # Each HTML-coded article is analyzed with beautiful soup
+        for i in range(2, 8):
+            url_rss_noob = "http://www.nouvelobs.com/" + cat +\
+                "/page-" + str(i) + ".html"
 
-    return(liste_url)
+            soup_url = utils.recovery_flux_url_rss(url_rss_noob)
+
+            # We retrieve all the articles for a given page
+            for h3 in soup_url.find_all('h3'):
+                if h3.get("class") == ['title']:
+                    if re.search('^\/', str(h3.a.get("href"))):
+                        new_article = "http://www.nouvelobs.com" +\
+                            h3.a.get("href")
+                        article_noob.append(new_article)
+
+    return(article_noob)
 
 
-def recovery_new_articles_noob_rss(file_target="data/clean/robot/" +
-                                   str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
+                                       str(date.datetime.now().date()) + "/"):
     """
         Returns:
             - creation of a json for each new article
     """
+
     file_json = []
-    # Each url is analized one by one
-    list_url = recovery_link_new_articles_noob_rss("http://www.nouvelobs." +
-                                                   "com/rss/")
-    for url in list_url:
-        soup_url = utils.recovery_flux_url_rss(url)
-        items = soup_url.find_all("item")
-        article_noob = []
+    article_noob = recovery_link_new_articles_noob_crawler()
 
-        # We're picking up every new article in a list
-        for item in items:
-            link_article = re.search(r"<link/>(.*)", str(item))[1]
-            link_article = link_article.split("<description>")
-            link_article = link_article[0]
-            article_noob.append(link_article)
-            if re.search("\/galeries\-photos\/", link_article):
-                article_noob.remove(link_article)
-        # Each article is analized one by one
-        for article in article_noob:
-            new_article = recovery_information_noob(article)
-            if utils.is_empty(new_article) is False:
-                file_json.append(new_article)
+    # Each article is analized one by one
+    for article in article_noob:
+        new_article = recovery_information_noob(article)
+        if utils.is_empty(new_article) is False:
+            file_json.append(new_article)
 
-    utils.create_json(file_target, file_json, "NouvelObs_nouveaux/",
+    utils.create_json(file_target, file_json, "NouvelObs_crawler/",
                       "noob")
 
 
 if __name__ == '__main__':
-    recovery_new_articles_noob_rss()
+    recovery_new_articles_noob_crawler()
