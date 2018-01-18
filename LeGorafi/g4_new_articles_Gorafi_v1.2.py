@@ -5,11 +5,12 @@
              SEGUELA Morgan
  V1 : create code
  V1.1 : create function
+ V1.2 : code optimization
 """
-
+import datetime as date
 import unidecode
 import re
-import g4_utils_v32 as utils
+import g4_utils_v40 as utils
 
 
 def recovery_information_lg(url):
@@ -23,32 +24,37 @@ def recovery_information_lg(url):
     soup = utils.recovery_flux_url_rss(url)
 
     # Retrieving the title
+    title = ''
     balise_title = soup.title.string
-    sep = balise_title.split("—")
-    title = unidecode.unidecode("—".join(sep[:-1]))
+    sep = balise_title.split('—')
+    title = unidecode.unidecode('—'.join(sep[:-1]))
 
-    # Retrieving of author and publication date
+    tag_context = soup.find('span', attrs={'class': 'context'})
+
+    # Retrieving of author
     author = []
-    for span in soup.find_all('span'):
-        if span.get("class") == ['context']:
-            author.append(span.a.get_text())
-            for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
-                                      str(span)):
-                date_p = valeur.group(0)
+    author.append(tag_context.a.get_text())
+
+    # Retrieving of publication date
+    date_p = ''
+    regex_date = re. search('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
+                            tag_context.get_text())
+    date_p = regex_date.group(0)
+    date_p = str(date.datetime.strptime(date_p, '%d/%m/%Y').date())
 
     # Retrieving the theme
-    for ul in soup.find_all('ul'):
-        if ul.get("class") == ['post-categories']:
-            for li in ul.find_all('li'):
-                theme = li.get_text()
+    tag_post_cat = soup.find('ul', attrs={'class': 'post-categories'})
+    for li in tag_post_cat.find_all('li'):
+        theme = li.get_text()
 
     # Retrieving the content of the article
-    contents = ""
-    for div in soup.find_all('div'):
-        if div.get("class") == ['content']:
-            for p in div.find_all('p'):
-                contents += p.get_text() + " "
-    new_article = utils.recovery_article(title, "Le Gorafi", author, date_p,
+    contents = ''
+    tag_content = soup.find('div', attrs={'class': 'content'})
+    if tag_content:
+        for p in tag_content.find_all('p'):
+            contents += p.get_text() + " "
+
+    new_article = utils.recovery_article(title, 'LeGorafi', author, date_p,
                                          contents, theme)
     return(new_article)
 
@@ -62,7 +68,7 @@ def recovery_link_new_articles_lg(url_rss):
         Retrieving links of new articles thanks to the rss feed
     """
     soup = utils.recovery_flux_url_rss(url_rss)
-    items = soup.find_all("item")
+    items = soup.find_all('item')
     links_article_gorafi = []
     for item in items:
         links_article_gorafi.append(re.search(r"<link/>(.*)", str(item))[1])
@@ -80,9 +86,10 @@ def recovery_new_article_lg():
     list_article = []
     for link_article in links_article:
         new_article = recovery_information_lg(link_article)
-        if new_article["theme"] != "Magazine":
+        if not utils.is_empty(new_article):
+            print(new_article)
             list_article.append(new_article)
-    utils.create_json(file_target, list_article, "LeGorafi", "lg")
+    utils.create_json(file_target, list_article, 'LeGorafi', 'lg')
 
 
 if __name__ == '__main__':
