@@ -36,7 +36,7 @@ def recovery_information_hum(url_article):
         if meta.get("property") == 'article:published_time':
             raw_date = meta.get("content")
             date_p = raw_date[0:10]
-            date_p = datetime.strptime(date_p, "%Y-%m-%d").strftime("%d/%m/%Y")
+            date_p = datetime.strptime(date_p, "%Y-%m-%d")
 
     contents = ""
     for div in soup_article.find_all('div'):
