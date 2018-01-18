@@ -14,7 +14,6 @@ import csv
 import datetime as date
 import json
 import os
-import re
 import bs4
 import requests
 from hashlib import md5
@@ -39,7 +38,7 @@ def get_hash(date_publi, text, newspaper):
         string -- a hash of the article
     """
 
-    hash=md5("{} {} {}".format(date_publi,text,newspaper).encode())
+    hash = md5("{} {} {}".format(date_publi, text, newspaper).encode())
     return hash.hexdigest()
 
 
@@ -115,7 +114,7 @@ def create_json(file_target, list_article, sources, abbreviation):
     It places the json file in the folder corresponding to the journal
     if it exists otherwise it creates it.
     """
-    os.makedirs(file_target+sources, exist_ok = True)
+    os.makedirs(file_target+sources, exist_ok=True)
     list_file = os.listdir(file_target + sources)
     if list_file:
         last_file = list_file[-1]
@@ -156,7 +155,7 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
         authors[ii] = unidecode.unidecode(authors[ii])
 
     new_article = {
-                "id_art" : get_hash(date_publi,title,newspaper),
+                "id_art": get_hash(date_publi, title, newspaper),
                 "title": unidecode.unidecode(title),
                 "newspaper": unidecode.unidecode(newspaper),
                 "author": authors,

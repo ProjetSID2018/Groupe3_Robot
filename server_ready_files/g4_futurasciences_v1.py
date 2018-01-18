@@ -6,7 +6,7 @@
  V1.1 : create function
  V1.2 : code optimization
 """
-import unidecode
+
 import re
 import g4_utils_v33 as utils
 
@@ -23,7 +23,7 @@ def recovery_information_fusc(url):
 
     # retrieve title
     title = ''
-    title = unidecode.unidecode(soup.title.string)
+    title = soup.title.string
     indice = title.find('|')
     if indice != -1:
         title = title[:indice-1]
@@ -43,7 +43,6 @@ def recovery_information_fusc(url):
     for p in soup.find_all('p'):
         for p2 in re.finditer('py0p5', p.get('class')[-1]):
             content += p.get_text()
-    content = unidecode.unidecode(content)
 
     # retrieve theme
     delimiter = url.split('/')
