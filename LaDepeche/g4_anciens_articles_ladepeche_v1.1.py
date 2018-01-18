@@ -72,14 +72,11 @@ def recovery_old_articles_LD(file_target = '/var/www/html/projet2018/data/clean/
                     + '&c=' + cat + '&plus-infos=1'
             soup = utils.recovery_flux_url_rss(url)
 
-        # We retrieve all the URL flux of each page
-        # Each HTML-coded article is scanned with beautiful soup.
         for h2 in soup.find_all('h2'):
             for item in h2.find_all('a'):
                 link = 'https://www.ladepeche.fr' + str(item.get('href'))
                 links_article.append(link)
 
-        # Retrieving variables needed to create the json file
         for link in links_article:
             new_article = recovery_article_ld(link)
             if not utils.is_empty(new_article):
