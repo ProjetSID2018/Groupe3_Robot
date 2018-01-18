@@ -105,11 +105,20 @@ def recovery_new_articles_fem(file_target="data/clean/robot/" +
             - creation of a json for each new article
     """
     file_json = []
+    i = 0
     article_fem = recovery_link_new_articles_fem()
     for article in article_fem:
-        file_json.append(recovery_information_fem(article))
+        new_article = recovery_information_fem(article)
+        if utils.is_empty(new_article) is False:
+            file_json.append(new_article)
+            i += 1
+        if i == 20:
+            utils.create_json(file_target, file_json, "Femina_crawler/",
+                              "fem")
+            i = 0
+            file_json = []
 
-    utils.create_json(file_target, file_json, "Femina_nouveaux/",
+    utils.create_json(file_target, file_json, "Femina_crawler/",
                       "fem")
 
 

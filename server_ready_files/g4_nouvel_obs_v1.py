@@ -30,7 +30,7 @@ def recovery_information_noob(url_article):
     # Retrieval of the author of the article
     author = []
     for div in soup_article.find_all('div'):
-        for valeur in re.finditer('author', str(div.get("class"))):
+        if re.search('author', str(div.get("class"))):
             author.append(div.p.span.get_text())
 
     # Retrieval of the artical theme
@@ -44,7 +44,7 @@ def recovery_information_noob(url_article):
     # Retrieving the content of the article
     contents = ""
     for div in soup_article.find_all('div'):
-        for valeur in re.finditer('body', str(div.get("id"))):
+        if re.search('body', str(div.get("id"))):
             for aside in div.find_all('aside'):
                 for p in aside.find_all('p'):
                     p.string = ""
@@ -76,7 +76,7 @@ def recovery_link_new_articles_noob_rss(url_rss):
     # Retrieving all urls of new RSS feeds of different categories
     for a in soup.find_all('a'):
         if a.get("class") == ['sprite-rss', 'sp-rss']:
-            for valeur in re.finditer('www', str(a.get("href"))):
+            if re.search('www', str(a.get("href"))):
                 liste_url.append(a.get("href"))
 
     return(liste_url)
@@ -89,6 +89,7 @@ def recovery_new_articles_noob_rss(file_target="data/clean/robot/" +
             - creation of a json for each new article
     """
     file_json = []
+    i = 0
     # Each url is analized one by one
     list_url = recovery_link_new_articles_noob_rss("http://www.nouvelobs." +
                                                    "com/rss/")
@@ -103,12 +104,21 @@ def recovery_new_articles_noob_rss(file_target="data/clean/robot/" +
             link_article = link_article.split("<description>")
             link_article = link_article[0]
             article_noob.append(link_article)
-            for valeur in re.finditer("\/galeries\-photos\/", link_article):
+            if re.search("\/galeries\-photos\/", link_article):
                 article_noob.remove(link_article)
         # Each article is analized one by one
         for article in article_noob:
-            file_json.append(recovery_information_noob(article))
-    utils.create_json(file_target, file_json, "NouvelObs_nouveaux/",
+            new_article = recovery_information_noob(article)
+            if utils.is_empty(new_article) is False:
+                file_json.append(new_article)
+            i += 1
+        if i == 20:
+            utils.create_json(file_target, file_json, "NouvelObs_rss/",
+                              "noob")
+            i = 0
+            file_json = []
+
+    utils.create_json(file_target, file_json, "NouvelObs/",
                       "noob")
 
 
