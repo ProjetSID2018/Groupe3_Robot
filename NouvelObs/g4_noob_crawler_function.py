@@ -101,6 +101,7 @@ def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
     """
 
     file_json = []
+    i = 0
     article_noob = recovery_link_new_articles_noob_crawler()
 
     # Each article is analized one by one
@@ -108,6 +109,12 @@ def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
         new_article = recovery_information_noob(article)
         if utils.is_empty(new_article) is False:
             file_json.append(new_article)
+            i += 1
+        if i == 20:
+            utils.create_json(file_target, file_json, "NouvelObs_crawler/",
+                              "noob")
+            i = 0
+            file_json = []
 
     utils.create_json(file_target, file_json, "NouvelObs_crawler/",
                       "noob")

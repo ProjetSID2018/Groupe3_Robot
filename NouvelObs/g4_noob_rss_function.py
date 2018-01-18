@@ -89,6 +89,7 @@ def recovery_new_articles_noob_rss(file_target="data/clean/robot/" +
             - creation of a json for each new article
     """
     file_json = []
+    i = 0
     # Each url is analized one by one
     list_url = recovery_link_new_articles_noob_rss("http://www.nouvelobs." +
                                                    "com/rss/")
@@ -110,8 +111,14 @@ def recovery_new_articles_noob_rss(file_target="data/clean/robot/" +
             new_article = recovery_information_noob(article)
             if utils.is_empty(new_article) is False:
                 file_json.append(new_article)
+            i += 1
+        if i == 20:
+            utils.create_json(file_target, file_json, "NouvelObs_rss/",
+                              "noob")
+            i = 0
+            file_json = []
 
-    utils.create_json(file_target, file_json, "NouvelObs_nouveaux/",
+    utils.create_json(file_target, file_json, "NouvelObs/",
                       "noob")
 
 

@@ -91,10 +91,17 @@ def recovery_new_articles_hum_crawler(file_target="data/clean/robot/" +
     file_json = []
     article_humanite = recovery_link_new_articles_hum_crawler()
     # Each url is analized one by one
+    i = 0
     for article in article_humanite:
         new_article = recovery_information_hum(article)
         if utils.is_empty(new_article) is False:
             file_json.append(new_article)
+            i += 1
+        if i == 20:
+            utils.create_json(file_target, file_json, "Humanite_crawler/",
+                              "hum")
+            i = 0
+            file_json = []
 
     utils.create_json(file_target, file_json, "Humanite_crawler/",
                       "hum")
