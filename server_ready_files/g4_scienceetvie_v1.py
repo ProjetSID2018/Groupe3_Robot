@@ -1,6 +1,6 @@
 # Group 4 Robot - Lea Besnard, Laetitia Krumeich, Noemie Deloeuvre
 
-import g4_utils_v34 as utils
+import g4_utils_v33 as utils
 import re
 from datetime import datetime
 import datetime as date
@@ -20,12 +20,11 @@ def recovery_information_sv(url_article):
     for h1 in soup_article.find_all("h1"):
         if h1.get("class") == ["like-h1"]:
             title = h1.get_text()
-            print(title)
 
     # date
     t_date = soup_article.find("time")["datetime"].split("-")
     t_date.reverse()
-    date="/".join(t_date)
+    date = "/".join(t_date)
 
     # author
     author = []
@@ -45,20 +44,27 @@ def recovery_information_sv(url_article):
     for meta in soup_article.find_all('meta'):
         if meta.get("property") == 'article:tag':
             theme = meta.get("content")
-            
+
     article = utils.recovery_article(title, 'Scienceetvie',
                                      author, date, content, theme)
     return(article)
 
 
-def recovery_old_articles_sv(file_target = "C:/Users/Laetitia/Desktop/Groupe4_Robot" +
-                               str(date.datetime.now().date()) + "/"):
+def recovery_old_articles_sv(
+    file_target="C:/Users/Laetitia/Desktop/Groupe4_Robot" + str(
+        date.datetime.now().date()) + "/"):
     """
         Returns:
             - creation of a json for each new article
     """
 
-    list_category = ["corps-et-sante", "nature-et-enviro", "ciel-et-espace", "technos-et-futur", "cerveau-et-intelligence", "science-et-culture"]
+    list_category = [
+        "corps-et-sante",
+        "nature-et-enviro",
+        "ciel-et-espace",
+        "technos-et-futur",
+        "cerveau-et-intelligence",
+        "science-et-culture"]
 
     file_json = []
     for cat in list_category:
@@ -73,7 +79,8 @@ def recovery_old_articles_sv(file_target = "C:/Users/Laetitia/Desktop/Groupe4_Ro
         for div in soup_url.find_all("div"):
             if div.get("class") == ["title"]:
                 for item in div.find_all("a"):
-                    links = "https://www.science-et-vie.com/" + str(item.get("href"))
+                    links = "https://www.science-et-vie.com/" + \
+                        str(item.get("href"))
                     article_sv.append(links)
 
         # Each article is analized one by one

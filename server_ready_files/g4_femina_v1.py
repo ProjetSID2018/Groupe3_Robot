@@ -1,9 +1,10 @@
 # Group 4
 # DELOEUVRE Noémie
 
-import g4_utils_v32 as utils
-import re
 import datetime as date
+import re
+
+import g4_utils_v33 as utils
 
 
 def recovery_information_fem(url_article):
