@@ -60,53 +60,56 @@ def collect_url_articles(url_theme):
 def collect_articles(list_dictionaries, list_url_articles, theme):
 
     for url_article in list_url_articles:
+        try:
+            req = requests.get(url_article)
+            data = req.text
+            soup = BeautifulSoup(data, 'lxml')
 
-        req = requests.get(url_article)
-        data = req.text
-        soup = BeautifulSoup(data, 'lxml')
+            title = soup.title.string
 
-        title = soup.title.string
-
-        list_authors = []
-        for a in soup.find_all('a'):
-            if a.get("class") == ['fig-content-metas__author']:
-                name = re.sub("\s\s+", "", a.get_text())
-                name = re.sub("\n", "", name)
-                list_authors.append(name)
-        if len(list_authors) == 0:
-            for span in soup.find_all('span'):
-                if span.get("class") == ['fig-content-metas__author']:
-                    name = re.sub("\s\s+", "", span.get_text())
+            list_authors = []
+            for a in soup.find_all('a'):
+                if a.get("class") == ['fig-content-metas__author']:
+                    name = re.sub("\s\s+", "", a.get_text())
                     name = re.sub("\n", "", name)
                     list_authors.append(name)
+            if len(list_authors) == 0:
+                for span in soup.find_all('span'):
+                    if span.get("class") == ['fig-content-metas__author']:
+                        name = re.sub("\s\s+", "", span.get_text())
+                        name = re.sub("\n", "", name)
+                        list_authors.append(name)
 
-        date_publication = ''
-        for marker_time in soup.find_all('time'):
-            for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
-                                      str(marker_time)):
-                date_publication = valeur.group(0)
-        date_publication = str(date.datetime.strptime(date_publication,
-                                                      "%d/%m/%Y").date())
+            date_publication = ""
+            for marker_time in soup.find_all('time'):
+                for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
+                                          str(marker_time)):
+                    date_publication = valeur.group(0)
+            date_publication = str(date.datetime.strptime(date_publication,
+                                                          "%d/%m/%Y").date())
 
-        content = ''
-        for p in soup.find_all('p'):
-            if p.get("class") == ['fig-content__chapo']:
-                content = p.get_text() + " "
+            content = ""
+            for p in soup.find_all('p'):
+                if p.get("class") == ['fig-content__chapo']:
+                    content = p.get_text() + " "
 
-        for div in soup.find_all('div'):
-            if div.get("class") == ['fig-content__body']:
-                for p in div.find_all('p'):
-                    content += p.get_text() + " "
+            for div in soup.find_all('div'):
+                if div.get("class") == ['fig-content__body']:
+                    for p in div.find_all('p'):
+                        content += p.get_text() + " "
 
-        new_article = utils.recovery_article(title, 'LeFigaro',
-                                             list_authors,
-                                             date_publication, content,
-                                             theme)
-        if not utils.is_empty(new_article):
-            list_dictionaries.append(new_article)
+            new_article = utils.recovery_article(title, 'LeFigaro',
+                                                 list_authors,
+                                                 date_publication, content,
+                                                 theme)
+            if not utils.is_empty(new_article):
+                list_dictionaries.append(new_article)
+
+        except:
+            print("Erreur lors de l'enregistrement de l'article")
 
 
-def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
+def recovery_new_articles_lfi(file_target="data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -117,7 +120,7 @@ def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/Proje
 
     for url_theme in list_url_themes:
 
-        list_dictionnaires = []
+        list_dictionaries = []
 
         theme = re.search("http://www.lefigaro.fr/rss/figaro_(.*).xml",
                           url_theme)[1]
@@ -126,11 +129,11 @@ def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/Proje
 
         list_url_articles = collect_url_articles(url_theme)
 
-        collect_articles(list_dictionnaires, list_url_articles, theme)
+        collect_articles(list_dictionaries, list_url_articles, theme)
 
         time.sleep(3)
 
-        utils.create_json(file_target, list_dictionnaires, 'leFigaro/',
+        utils.create_json(file_target, list_dictionaries, 'leFigaro/',
                           'lfi')
 
 

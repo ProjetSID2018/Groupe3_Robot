@@ -59,51 +59,55 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
         theme {string} -- theme related to the list of dictionaries
     """
     for url_article in list_url_articles:
-        req = requests.get(url_article)
-        data = req.text
-        soup = BeautifulSoup(data, "lxml")
+        try:
+            req = requests.get(url_article)
+            data = req.text
+            soup = BeautifulSoup(data, "lxml")
+    
+            balise_title = soup.title.string
+            sep = balise_title.split(" - Le Point")
+            title = sep[0]
+    
+            list_authors = []
+            for div in soup.find_all('div'):
+                if div.get('class') == ['mbs']:
+                    for span in div.find_all('span'):
+                        name = span.get_text()
+                        name = re.sub('Par', '', name)
+                        name = re.sub("\s\s+", "", name)
+            list_authors.append(name)
+    
+            dates = []
+            for balise_time in soup.find_all('time'):
+                for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
+                                          str(balise_time)):
+                    dates.append(date.datetime.strptime(valeur.group(0),
+                                                        '%d/%m/%Y'))
+            date_publication = date.datetime.strftime(min(dates), '%d/%m/%Y')
+            date_publication = str(date.datetime.strptime(date_publication,
+                                                          "%d/%m/%Y").date())
+    
+            content = ''
+            for h2 in soup.find_all('h2'):
+                if h2.get('class') == ['art-chapeau']:
+                    content += h2.get_text()+" "
+            for div in soup.find_all('div'):
+                if div.get('class') == ['art-text']:
+                    for p in div.find_all('p'):
+                        content += p.get_text()+" "
+    
+            new_article = utils.recovery_article(title, 'LePoint',
+                                                 list_authors,
+                                                 date_publication, content,
+                                                 theme)
+            if not utils.is_empty(new_article):
+                list_dictionaries.append(new_article)
 
-        balise_title = soup.title.string
-        sep = balise_title.split(" - Le Point")
-        title = sep[0]
-
-        list_authors = []
-        for div in soup.find_all('div'):
-            if div.get('class') == ['mbs']:
-                for span in div.find_all('span'):
-                    name = span.get_text()
-                    name = re.sub('Par', '', name)
-                    name = re.sub("\s\s+", "", name)
-        list_authors.append(name)
-
-        dates = []
-        for balise_time in soup.find_all('time'):
-            for valeur in re.finditer('[0-9]{2}\/[0-9]{2}\/[0-9]{4}',
-                                      str(balise_time)):
-                dates.append(date.datetime.strptime(valeur.group(0),
-                                                    '%d/%m/%Y'))
-        date_publication = date.datetime.strftime(min(dates), '%d/%m/%Y')
-        date_publication = str(date.datetime.strptime(date_publication,
-                                                      "%d/%m/%Y").date())
-
-        content = ''
-        for h2 in soup.find_all('h2'):
-            if h2.get('class') == ['art-chapeau']:
-                content += h2.get_text()+" "
-        for div in soup.find_all('div'):
-            if div.get('class') == ['art-text']:
-                for p in div.find_all('p'):
-                    content += p.get_text()+" "
-
-        new_article = utils.recovery_article(title, 'LePoint',
-                                             list_authors,
-                                             date_publication, content,
-                                             theme)
-        if not utils.is_empty(new_article):
-            list_dictionaries.append(new_article)
+        except:
+            print("Erreur lors de l'enregistrement de l'article")
 
 
-def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
+def recovery_new_articles_lpt(file_target="data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -112,11 +116,11 @@ def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/Proje
     """
     list_url_themes = collect_url_themes('http://www.lepoint.fr/rss/')
 
-    list_url_articles = []
-
     for url_theme in list_url_themes:
 
-        list_dictionnaires = []
+        list_url_articles = []
+
+        list_dictionaries = []
 
         theme = re.search("http://www.lepoint.fr/(.*)/rss.xml", url_theme)[1]
         print("---------------------------"+theme+"------------------------")
@@ -126,10 +130,10 @@ def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/Proje
             collect_url_articles(list_url_articles,
                                  url_theme+"index_"+str(index_page)+".php")
 
-        collect_articles(list_dictionnaires, list_url_articles, theme)
+        collect_articles(list_dictionaries, list_url_articles, theme)
         time.sleep(3)
 
-        utils.create_json(file_target, list_dictionnaires, "LePoint/",
+        utils.create_json(file_target, list_dictionaries, "LePoint/",
                           "lpt")
 
 
