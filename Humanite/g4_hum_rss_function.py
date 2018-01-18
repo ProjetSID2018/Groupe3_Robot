@@ -3,7 +3,7 @@
 # Group 4
 # Realized by DELOEUVRE Noémie
 
-import g4_utils_v32 as utils
+import g4_utils_v40 as utils
 import re
 from datetime import datetime
 import datetime as date
@@ -52,7 +52,7 @@ def recovery_information_hum(url_article):
     return(article)
 
 
-def recovery_link_new_articles_hum(url_rss):
+def recovery_link_new_articles_hum_rss(url_rss):
     """
         Arguments:
             - url of the page containing feed links for
@@ -72,22 +72,25 @@ def recovery_link_new_articles_hum(url_rss):
     return(article_humanite)
 
 
-def recovery_new_articles_hum(file_target="data/clean/robot/" +
-                              str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_hum_rss(file_target="data/clean/robot/" +
+                                  str(date.datetime.now().date()) + "/"):
     """
         Returns:
             - creation of a json for each new article
     """
     file_json = []
     # Each url is analized one by one
-    article_humanite = recovery_link_new_articles_hum("https://www.humanite" +
-                                                      ".fr/rss/actu.rss")
+    article_humanite = recovery_link_new_articles_hum_rss("https://www." +
+                                                          "humanite.fr/rss/" +
+                                                          "actu.rss")
     for article in article_humanite:
-        file_json.append(recovery_information_hum(article))
+        new_article = recovery_information_hum(article)
+        if utils.is_empty(new_article) is False:
+            file_json.append(new_article)
 
     utils.create_json(file_target, file_json, "Humanite_nouveaux/",
                       "hum")
 
 
 if __name__ == '__main__':
-    recovery_new_articles_hum()
+    recovery_new_articles_hum_rss()
