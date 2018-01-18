@@ -29,7 +29,7 @@ def recovery_information_hum(url_article):
     author = []
     for h2 in soup_article.find_all('h2'):
         for a in h2.find_all('a'):
-            for valeur in re.finditer('auteur', str(a.get("href"))):
+            if re.search('auteur', str(a.get("href"))):
                 author.append(a.get_text())
 
     for meta in soup_article.find_all('meta'):

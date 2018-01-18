@@ -29,7 +29,7 @@ def recovery_information_hum(url_article):
     author = []
     for h2 in soup_article.find_all('h2'):
         for a in h2.find_all('a'):
-            for valeur in re.finditer('auteur', str(a.get("href"))):
+            if re.search('auteur', str(a.get("href"))):
                 author.append(a.get_text())
 
     for meta in soup_article.find_all('meta'):
@@ -74,8 +74,8 @@ def recovery_link_new_articles_hum_crawler():
             soup_url = utils.recovery_flux_url_rss(url_rss_humanite)
             # We retrieve all the articles for a given page
             for div in soup_url.find_all('div'):
-                for valeur in re.finditer('field-name-field-news-chapo',
-                                          str(div.get("class"))):
+                if re.search('field-name-field-news-chapo',
+                             str(div.get("class"))):
                     for a in div.find_all('a'):
                         article_humanite.append(a.get("href"))
 
