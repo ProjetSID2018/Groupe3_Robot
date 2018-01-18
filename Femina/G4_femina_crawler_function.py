@@ -1,7 +1,7 @@
 # Group 4
 # DELOEUVRE Noémie
 
-import g4_utils_v32 as utils
+import g4_utils_v40 as utils
 import re
 import datetime as date
 
@@ -106,7 +106,9 @@ def recovery_new_articles_fem(file_target="data/clean/robot/" +
     file_json = []
     article_fem = recovery_link_new_articles_fem()
     for article in article_fem:
-        file_json.append(recovery_information_fem(article))
+        new_article = recovery_information_fem(article)
+        if utils.is_empty(new_article) is False:
+            file_json.append(new_article)
 
     utils.create_json(file_target, file_json, "Femina_nouveaux/",
                       "fem")

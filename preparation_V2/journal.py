@@ -4,16 +4,18 @@ from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 from requests import get as get_request
 
+
 class Journal(ABC):
 
-    def __init__(self, name_journal, _abbreviation, _base_url=""):
+    def __init__(self, _name_journal, _abbreviation, _base_url=""):
         self.list_article=[]
-        self.name_journal=name_journal
+        self.name_journal=_name_journal
         self._abbreviation=_abbreviation
         #self.source=source
         self._base_url=_base_url
 
-
+    def __str__(self):
+        return self.name_journal
     def add_article(self, article):
         """
         Arguments:
@@ -25,7 +27,7 @@ class Journal(ABC):
         if isinstance(article,Article):
             self.list_article.append(article)
         else:
-            raise JournalException("l'objet à ajouter n'est pas une article")
+            raise JournalException("Error")
 
     def find_list_article(self,new):
         """

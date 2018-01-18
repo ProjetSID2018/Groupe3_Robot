@@ -1,7 +1,7 @@
 # Group 4
 # DELOEUVRE Noémie
 
-import g4_utils_v32 as utils
+import g4_utils_v40 as utils
 import re
 from datetime import datetime
 import datetime as date
@@ -30,7 +30,7 @@ def recovery_information_noob(url_article):
     # Retrieval of the author of the article
     author = []
     for div in soup_article.find_all('div'):
-        for valeur in re.finditer('author', str(div.get("class"))):
+        if re.search('author', str(div.get("class"))):
             author.append(div.p.span.get_text())
 
     # Retrieval of the artical theme
@@ -44,7 +44,7 @@ def recovery_information_noob(url_article):
     # Retrieving the content of the article
     contents = ""
     for div in soup_article.find_all('div'):
-        for valeur in re.finditer('body', str(div.get("id"))):
+        if re.search('body', str(div.get("id"))):
             for aside in div.find_all('aside'):
                 for p in aside.find_all('p'):
                     p.string = ""
@@ -85,7 +85,7 @@ def recovery_link_new_articles_noob_crawler():
             # We retrieve all the articles for a given page
             for h3 in soup_url.find_all('h3'):
                 if h3.get("class") == ['title']:
-                    for valeur in re.finditer('^\/', str(h3.a.get("href"))):
+                    if re.search('^\/', str(h3.a.get("href"))):
                         new_article = "http://www.nouvelobs.com" +\
                             h3.a.get("href")
                         article_noob.append(new_article)
@@ -105,7 +105,9 @@ def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
 
     # Each article is analized one by one
     for article in article_noob:
-        file_json.append(recovery_information_noob(article))
+        new_article = recovery_information_noob(article)
+        if utils.is_empty(new_article) is False:
+            file_json.append(new_article)
 
     utils.create_json(file_target, file_json, "NouvelObs_crawler/",
                       "noob")

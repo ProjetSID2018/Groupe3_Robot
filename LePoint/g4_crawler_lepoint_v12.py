@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 10 8:30:00 2018
+Created on Wed Jan 10 8:30:00 2018
 Group 4
 @authors: Noemie DELOEUVRE, Morgan SEGUELA, Celine Mothes, Aurelien PELAT
 V 1.2
@@ -11,7 +11,7 @@ import datetime as date
 from bs4 import BeautifulSoup
 import requests
 import re
-import g4_utils_v34 as utils
+import g4_utils_v40 as utils
 
 
 def collect_url_themes(url_lepoint):
@@ -84,7 +84,8 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 for span in div.find_all('span'):
                     name = span.get_text()
                     name = re.sub('Par', '', name)
-        list_authors.append(name)
+                    name = re.sub('\n', '', name)
+                    list_authors.append(name)
 
         dates = []
         for balise_time in soup.find_all('time'):
@@ -93,6 +94,8 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 dates.append(date.datetime.strptime(valeur.group(0),
                                                     '%d/%m/%Y'))
         date_publication = date.datetime.strftime(min(dates), '%d/%m/%Y')
+        date_publication = str(date.datetime.strptime(date_publication,
+                                                      "%d/%m/%Y").date())
 
         content = ''
         for h2 in soup.find_all('h2'):
@@ -103,17 +106,12 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 for p in div.find_all('p'):
                     content += p.get_text()+" "
 
-        if (title != ''
-                and len(list_authors) != 0
-                and date_publication != ''
-                and content != ''
-                and theme != ''):
-            print(title)
-            new_article = utils.recovery_article(title, 'LePoint',
-                                                 list_authors,
-                                                 date_publication, content,
-                                                 theme)
-        list_dictionaries.append(new_article)
+        new_article = utils.recovery_article(title, 'LePoint',
+                                             list_authors,
+                                             date_publication, content,
+                                             theme)
+        if not utils.is_empty(new_article):
+            list_dictionaries.append(new_article)
 
 
 def recovery_new_articles_lpt(file_target="data/clean/robot/" +
@@ -125,11 +123,11 @@ def recovery_new_articles_lpt(file_target="data/clean/robot/" +
     """
     list_url_themes = collect_url_themes('http://www.lepoint.fr/')
 
-    list_url_articles = []
-
-    list_dictionnaires = []
-
     for url_theme in list_url_themes:
+
+        list_url_articles = []
+
+        list_dictionaries = []
 
         theme = re.search("http://www.lepoint.fr/(.*)/", url_theme)[1]
         print("---------------------------"+theme+"------------------------")
@@ -139,11 +137,11 @@ def recovery_new_articles_lpt(file_target="data/clean/robot/" +
             collect_url_articles(list_url_articles,
                                  url_theme+"index_"+str(index_page)+".php")
 
-        collect_articles(list_dictionnaires, list_url_articles, theme)
+        collect_articles(list_dictionaries, list_url_articles, theme)
         time.sleep(3)
 
-    utils.create_json(file_target, list_dictionnaires, "LePointExistant/",
-                      "lpt")
+        utils.create_json(file_target, list_dictionaries, "LePoint/",
+                          "lpt")
 
 
 if __name__ == '__main__':

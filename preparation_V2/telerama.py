@@ -7,7 +7,6 @@ class Telerama(Journal):
     def __init__(self, name_journal, _abbreviation, _base_url=""):
         Journal.__init__(self, name_journal, _abbreviation, _base_url)
 
-    # à rédéfinir
     def find_article(self,url):
         soup=self.recovery_flux_url(url)
         article_soup=soup.find("article")
@@ -30,7 +29,6 @@ class Telerama(Journal):
         content = regex.sub("", content)
         return Article(title,newspaper,authors,date_pub,content,theme)
     
-
     def find_links(self,new):
         """
             it create a json for each new article
@@ -47,7 +45,6 @@ class Telerama(Journal):
                 url=self.base_url+"/"+category+"/articles?page="+str(i)
                 urls.append(url)
         return urls
-
 
     def find_articles(self,url):
         """
@@ -68,5 +65,3 @@ class Telerama(Journal):
         """
         soup=self.recovery_flux_url(url)
         return soup.find("div",class_="article--text")!=None
-
-

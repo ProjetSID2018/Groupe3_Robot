@@ -1,16 +1,16 @@
-import os
-import json
-import csv
-import datetime as date
+from os import listdir,path,makedirs
+from json import dump
+from csv import reader
+from datetime import datetime
 
 class JournalManager:
 
     root="/var/www/html/projet2018/data/clean/robot/"
 
-    def __init__(self,journal,file_target,sources):
-        self.journal=journal
-        self.file_target=file_target
-        self.sources=sources
+    def __init__(self,_journal,_file_target,_sources):
+        self._journal=_journal
+        self._file_target=_file_target
+        self._sources=_sources
 
     def already_exists(self,article):
         """create a test to see if the article entered already exists
@@ -20,7 +20,7 @@ class JournalManager:
             boolean -- False: Doesn't exist | True: Does exist
         """
         with open("hash_text.csv", "r") as f:
-            csv_reader = csv.reader(f, delimiter=",")
+            csv_reader = reader(f, delimiter=",")
             already_existing_hash = csv_reader.__next__()[:-1]
         return article.id_art in already_existing_hash
 
@@ -29,26 +29,15 @@ class JournalManager:
             f.write(article.id_art + ",")
 
     def create_json(self,new=True):
-        """
-        Entree:
-            new:boolean
-        Exit:
-            one json file per item
-
-        For each article, the function creates a json file named after it:
-            art_abreviation_numeroArticle_datejour_robot. json.
-        It places the json file in the folder corresponding to the journal
-        if it exists otherwise it creates it.
-        """
-        if not os.path.exists(self.file_target+self.sources):
-            os.makedirs(self.file_target+self.sources)
+        if not path.exists(self.file_target+self.sources):
+            makedirs(self.file_target+self.sources)
             ii = 1
         else:
-            list_file = os.listdir(self.file_target+self.sources)
+            list_file = listdir(self.file_target+self.sources)
             last_file = list_file[-1]
             delimiter = last_file.split("_")
             ii = int(delimiter[2]) + 1
-        cur_date = date.datetime.now().date()
+        cur_date = datetime.now().date()
         list_article= self.journal.find_list_article(new)
         for article in list_article:
             if not self.already_exists(article):
@@ -60,6 +49,28 @@ class JournalManager:
                     file_art = self.file_target + self.sources + "/" + "art_" + self.journal.abbreviation\
                     + "_" + str(ii) + "_" + str(cur_date) + "_robot.json"
                 with open(file_art, "w", encoding="UTF-8") as fic:
-                    json.dump(article.to_json(), fic, ensure_ascii=False)
+                    dump(article.to_json(), fic, ensure_ascii=False)
 
                 ii += 1
+
+    def _get_journal(self):
+        return self._journal
+
+    def _set_journal(self,_journal):
+        self._journal=_journal
+
+    def _get_file_target(self):
+        return self._file_target
+
+    def _set_file_target(self,_file_target):
+        self._file_target=_file_target   
+
+    def _get_sources(self):
+        return self._sources
+
+    def _set_sources(self,_sources):
+        self._sources=_sources   
+
+    journal=property(_get_journal,_set_journal)
+    file_target=property(_get_file_target,_set_file_target)
+    sources=property(_get_sources,_set_sources)
