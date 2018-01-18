@@ -84,7 +84,8 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 for span in div.find_all('span'):
                     name = span.get_text()
                     name = re.sub('Par', '', name)
-        list_authors.append(name)
+                    name = re.sub('\n', '', name)
+                    list_authors.append(name)
 
         dates = []
         for balise_time in soup.find_all('time'):
@@ -113,7 +114,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
+def recovery_new_articles_lpt(file_target="data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -122,11 +123,11 @@ def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/Proje
     """
     list_url_themes = collect_url_themes('http://www.lepoint.fr/')
 
-    list_url_articles = []
-
     for url_theme in list_url_themes:
 
-        list_dictionnaires = []
+        list_url_articles = []
+
+        list_dictionaries = []
 
         theme = re.search("http://www.lepoint.fr/(.*)/", url_theme)[1]
         print("---------------------------"+theme+"------------------------")
@@ -136,10 +137,10 @@ def recovery_new_articles_lpt(file_target="C:/Users/aurel/Documents/Etudes/Proje
             collect_url_articles(list_url_articles,
                                  url_theme+"index_"+str(index_page)+".php")
 
-        collect_articles(list_dictionnaires, list_url_articles, theme)
+        collect_articles(list_dictionaries, list_url_articles, theme)
         time.sleep(3)
 
-        utils.create_json(file_target, list_dictionnaires, "LePoint/",
+        utils.create_json(file_target, list_dictionaries, "LePoint/",
                           "lpt")
 
 

@@ -127,7 +127,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/ProjetIPJournaux/server_ready_files/data/clean/robot/" +
+def recovery_new_articles_lfi(file_target="data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
@@ -138,7 +138,7 @@ def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/Proje
 
     for url_theme in list_url_themes:
 
-        list_dictionnaires = []
+        list_dictionaries = []
 
         theme = re.search("http://www.lefigaro.fr/(.*)", url_theme)[1]
         theme = re.sub("/", "", theme)
@@ -151,11 +151,11 @@ def recovery_new_articles_lfi(file_target="C:/Users/aurel/Documents/Etudes/Proje
         for url_sub_theme in list_url_sub_themes:
                 collect_url_articles(list_url_articles, url_sub_theme)
 
-        collect_articles(list_dictionnaires, list_url_articles, theme)
+        collect_articles(list_dictionaries, list_url_articles, theme)
 
         time.sleep(3)
 
-        utils.create_json(file_target, list_dictionnaires, 'leFigaro/',
+        utils.create_json(file_target, list_dictionaries, 'leFigaro/',
                           'lfi')
 
 
