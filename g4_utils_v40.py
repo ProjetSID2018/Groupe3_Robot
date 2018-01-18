@@ -20,6 +20,7 @@ import bs4
 import requests
 from hashlib import md5
 import unidecode
+import re
 
 
 def add_to_index(date_publi, text, newspaper):
@@ -154,6 +155,10 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
     """
     for ii in range(len(authors)):
         authors[ii] = unidecode.unidecode(authors[ii])
+
+    content = re.sub(r"\s\s+", " ", content)
+    content = re.sub(r"\n", "", content)
+    content = re.sub(r"\r", "", content)
 
     new_article = {
                 "id_art": get_hash(date_publi, title, newspaper),
