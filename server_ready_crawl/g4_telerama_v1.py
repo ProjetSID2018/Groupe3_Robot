@@ -6,25 +6,26 @@
  V0 : create code
  V1 : create function
 """
-import os
-import json
 import datetime as date
 import re
-import g4_utils_v33 as utils
+import g4_utils_v40 as utils
 
 # Verifier si le tag contient le texte Copyright
 
 
 def has_copyright(tag):
     """
-        Verifier si le contenu de la balise contient le mot cle "copyright"
+        Check if the content of the tag contains the keyword "copyright"  
     """
     return "Copyright" in tag.get_text()
 
 
 def get_article_of_category(url):
     """
-        Prend en parametre une catégorie et retour toutes les articles de cette catégorie
+        Arguments :
+            - Category
+        Returns :
+            - All articles of this category
     """
     result = []
     soup = utils.recovery_flux_url_rss(url)
@@ -38,7 +39,10 @@ def get_article_of_category(url):
 
 def get_article(url):
     """
-        Prend en argument une adresse url (url) et retourne un dictionnaire
+        Arguments :
+            - URL address
+        Returns :
+            - Dictionnary
     """
     from unidecode import unidecode
     soup = utils.recovery_flux_url_rss(url)
@@ -46,16 +50,21 @@ def get_article(url):
     meta = soup.find("meta", property="og:title").get("content")
     tab = meta.split("-")
     n = len(tab)
-    newspaper = tab[n - 1]
+
     theme = tab[n - 2]
+
     title = "-".join(tab[:n - 2])
+
     authors = []
     regex = re.compile(r'[\n\r\t]')
     for span in article.find_all("span", class_="author--name"):
         author = regex.sub("", unidecode(span.get_text()))
         authors.append(author.strip())
+
     date_pub = article.find("span", itemprop="datePublished").get(
-        "datetime")[:10].replace("-", "/")
+        "datetime")[:10].split("-")
+    date_pub = date_pub[2] + "-" + date_pub[1] + "-" + date_pub[0]
+
     content = ""
     for div in article.find_all(
         "div",
@@ -66,45 +75,40 @@ def get_article(url):
         for p in div.find_all("p"):
             content = content + p.get_text()
     content = regex.sub("", content)
-    return utils.recovery_article(
-        unidecode(title),
-        unidecode(newspaper),
-        authors,
-        date_pub,
-        unidecode(content),
-        unidecode(theme))
+    return utils.recovery_article(title, "Telerama", authors, date_pub,
+                                  content, theme)
 
 
 def is_article(url):
     """
-        Prend en argument une adresse url et retourne vrai s'il est une 
-        article et faux sinon
+        Prend en argument une adresse url et retourne
+        vrai s'il est une article et faux sinon
     """
     soup = utils.recovery_flux_url_rss(url)
     return soup.find("div", class_="article--text") is not None
 
 
 def add_articles(
-        file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/" +
-        str(
-            date.datetime.now().date()) +
-        "/"):
+        file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/" +
+                    "Telerama/Art/" + str(date.datetime.now().date()) + "/"):
     """
         it create a json for each new article
     """
     categories = {
-        "cinema": 40,
-        "scenes": 30,
-        "enfants": 3,
-        "idees": 30,
+        "cinema": 5,
+        "scenes": 5,
+        "enfants": 5,
+        "idees": 5,
     }
     articles = []
     for category, nbre in categories.items():
         for i in range(0, nbre):
             url = "http://www.telerama.fr/" + \
                 category + "/articles?page=" + str(i)
-            articles.extend(get_article_of_category(url))
-            utils.create_json(file_target, articles, "Telerama/", "tera")
+            new_article = get_article_of_category(url)
+            if utils.is_empty(new_article) is False:
+                articles.append(new_article)
+    utils.create_json(file_target, articles, "Telerama/", "tera")
 
 
 if __name__ == '__main__':
