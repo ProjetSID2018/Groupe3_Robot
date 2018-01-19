@@ -6,7 +6,7 @@
  V1.1 : create function
  V1.2 : code optimization
 """
-import unidecode
+
 import re
 import g4_utils_v40 as utils
 import datetime as date
@@ -24,7 +24,7 @@ def recovery_information_fusc(url):
 
     # retrieve title
     title = ''
-    title = unidecode.unidecode(soup.title.string)
+    title = soup.title.string
     indice = title.find('|')
     if indice != -1:
         title = title[:indice-1]
@@ -44,7 +44,7 @@ def recovery_information_fusc(url):
     for p in soup.find_all('p'):
         for p2 in re.finditer('py0p5', p.get('class')[-1]):
             content += p.get_text()
-    content = unidecode.unidecode(content)
+    
 
     # retrieve theme
     delimiter = url.split('/')
@@ -69,14 +69,13 @@ def recovery_link_new_articles(url_rss):
     return(list_link)
 
 
-def recovery_new_articles_fusc():
+def recovery_new_articles_fusc(file_target = '/var/www/html/projet2018/data/clean/robot/' + str(date.datetime.now().date()) + "/"):
     """
         it create a json for each new article
     """
     links = recovery_link_new_articles('https://www.futura-sciences.com/' +
                                        'flux-rss/')
     list_articles = []
-    file_target = '/var/www/html/projet2018/data/clean/robot/'
     for article in links:
         new_article = recovery_information_fusc(article)
         if not utils.is_empty(new_article):

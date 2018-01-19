@@ -82,17 +82,20 @@ def recovery_link_new_articles_fem():
                      "Famille/Adolescent"]
     article_fem = []
     for category in list_category:
-        for i in range(2, 5):
-            url_rss_fem = "http://www.femina.fr/" +\
-                category + "/page-" + str(i)
-            soup_url = utils.recovery_flux_url_rss(url_rss_fem)
+        for i in range(2, 45):
+            try:
+                url_rss_fem = "http://www.femina.fr/" +\
+                    category + "/page-" + str(i)
+                soup_url = utils.recovery_flux_url_rss(url_rss_fem)
 
-            for h2 in soup_url.find_all('h2'):
-                for a in h2.find_all('a'):
-                    article_fem.append(a.get("href"))
-            for h3 in soup_url.find_all('h3'):
-                for a in h3.find_all('a'):
-                    article_fem.append(a.get("href"))
+                for h2 in soup_url.find_all('h2'):
+                    for a in h2.find_all('a'):
+                        article_fem.append(a.get("href"))
+                for h3 in soup_url.find_all('h3'):
+                    for a in h3.find_all('a'):
+                        article_fem.append(a.get("href"))
+            except:
+                break
 
     return(article_fem)
 
@@ -104,20 +107,20 @@ def recovery_new_articles_fem(file_target="data/clean/robot/" +
             - creation of a json for each new article
     """
     file_json = []
-    i = 0
     article_fem = recovery_link_new_articles_fem()
+    i = 0
     for article in article_fem:
         new_article = recovery_information_fem(article)
         if utils.is_empty(new_article) is False:
             file_json.append(new_article)
             i += 1
         if i == 20:
-            utils.create_json(file_target, file_json, "Femina_crawler/",
-                              "fem")
+            utils.create_json(file_target, file_json, "Femina/",
+                      "fem")
             i = 0
             file_json = []
 
-    utils.create_json(file_target, file_json, "Femina_crawler/",
+    utils.create_json(file_target, file_json, "Femina/",
                       "fem")
 
 

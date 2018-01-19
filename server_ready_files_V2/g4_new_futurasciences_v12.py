@@ -6,9 +6,10 @@
  V1.1 : create function
  V1.2 : code optimization
 """
-import unidecode
+
 import re
-import g4_utils_v33 as utils
+import g4_utils_v40 as utils
+import datetime as date
 
 
 def recovery_information_fusc(url):
@@ -23,11 +24,10 @@ def recovery_information_fusc(url):
 
     # retrieve title
     title = ''
-    title = unidecode.unidecode(soup.title.string)
+    title = soup.title.string
     indice = title.find('|')
     if indice != -1:
         title = title[:indice-1]
-
     # retrieve the author
     author = []
     tag_author = soup.find('h3', attrs={'itemprop': 'author'})
@@ -37,13 +37,14 @@ def recovery_information_fusc(url):
     publi_date = ''
     regex_date = re. search('[0-9]{2}\/[0-9]{2}\/[0-9]{4}', soup.time.string)
     publi_date = regex_date.group(0)
+    publi_date = str(date.datetime.strptime(publi_date, '%d/%m/%Y').date())
 
     # retrieve content
     content = ''
     for p in soup.find_all('p'):
         for p2 in re.finditer('py0p5', p.get('class')[-1]):
             content += p.get_text()
-    content = unidecode.unidecode(content)
+    
 
     # retrieve theme
     delimiter = url.split('/')
@@ -68,7 +69,7 @@ def recovery_link_new_articles(url_rss):
     return(list_link)
 
 
-def recovery_new_articles_fusc(file_target = '/var/www/html/projet2018/data/clean/robot/'):
+def recovery_new_articles_fusc(file_target = '/var/www/html/projet2018/data/clean/robot/' + str(date.datetime.now().date()) + "/"):
     """
         it create a json for each new article
     """
