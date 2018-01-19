@@ -123,4 +123,4 @@ def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
 
 if __name__ == '__main__':
     file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) + "/"
-    recovery_new_articles_noob_crawler()
+    recovery_new_articles_noob_crawler(file_target)

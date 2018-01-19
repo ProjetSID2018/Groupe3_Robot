@@ -42,7 +42,7 @@ def recovery_information_sv(url_article):
     return(article)
 
 
-def recovery_old_articles_sv(file_target='/var/www/html/projet2018/data/clean/robot/" +
+def recovery_old_articles_sv(file_target='/var/www/html/projet2018/data/clean/robot/' +
                              str(date.datetime.now().date()) + "/"):
     """
         Returns:

@@ -81,7 +81,7 @@ def recovery_link_old_articles_lg(url_rss):
     return(link_article)
 
 
-def recovery_old_article_lg(file_target="data/clean/robot/" +
+def recovery_old_article_lg(file_target="/var/www/html/projet2018/data/clean/robot/" +
                             str(date.datetime.now().date()) + "/"):
     """
         it create a json for each new article

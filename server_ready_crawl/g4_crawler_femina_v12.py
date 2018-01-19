@@ -100,7 +100,7 @@ def recovery_link_new_articles_fem():
     return(article_fem)
 
 
-def recovery_new_articles_fem(file_target="data/clean/robot/" +
+def recovery_new_articles_fem(file_target="/var/www/html/projet2018/data/clean/robot/" +
                               str(date.datetime.now().date()) + "/"):
     """
         Returns:

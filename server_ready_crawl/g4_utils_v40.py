@@ -25,7 +25,7 @@ import re
 
 def add_to_index(date_publi, text, newspaper):
     hash_text = get_hash(date_publi, text, newspaper)
-    with open("hash_text.csv", "a") as f:
+    with open("/var/www/html/projet2018/code/robot/hash_text.csv", "a") as f:
         f.write(hash_text + ",")
 
 
@@ -57,7 +57,7 @@ def already_exists(date_publi, text, newspaper):
     """
 
     hash_text = get_hash(date_publi, text, newspaper)
-    with open("hash_text.csv", "r") as f:
+    with open("/var/www/html/projet2018/code/robot/hash_text.csv", "r") as f:
         csv_reader = csv.reader(f, delimiter=",")
         already_existing_hash = csv_reader.__next__()[:-1]
     return hash_text in already_existing_hash
@@ -91,12 +91,12 @@ def create_index():
 
         hash_text = list(set(hash_text))
 
-        with open("hash_text.csv", "a") as f:
+        with open("/var/www/html/projet2018/code/robot/hash_text.csv", "a") as f:
             f.write(",".join(hash_text)+",")
         print("creer")
 
     except:
-        with open("hash_text.csv", "w") as f:
+        with open("/var/www/html/projet2018/code/robot/hash_text.csv", "w") as f:
             f.write(",")
             print("creer")
 
@@ -168,7 +168,7 @@ def recovery_article(title, newspaper, authors, date_publi, content, theme):
                 "title": unidecode.unidecode(title),
                 "newspaper": unidecode.unidecode(newspaper),
                 "author": authors,
-                "date_publi": date_publi,
+                "date_publi": str(date_publi),
                 "content": unidecode.unidecode(content),
                 "theme": unidecode.unidecode(theme)
         }
