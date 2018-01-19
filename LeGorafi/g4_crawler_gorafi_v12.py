@@ -69,19 +69,20 @@ def recovery_link_old_articles_lg(url_rss):
                      'france/economie', 'culture', 'people', 'sports',
                      'hi-tech', 'sciences', 'ledito']
     # We retrieve the URL feeds for each page of category
+    link_article = []
     for cat in list_category:
         for i in range(2, 8):
             url_rss = url_rss + cat + '/page/' + str(i) + '/feed/'
             soup = utils.recovery_flux_url_rss(url_rss)
             items = soup.find_all('item')
-            link_article = []
             # We retrieve all the link of articles for a given page
             for item in items:
                 link_article.append(re.search(r"<link/>(.*)", str(item))[1])
     return(link_article)
 
 
-def recovery_old_article_lg(file_target = '/var/www/html/projet2018/data/clean/robot/'):
+def recovery_old_article_lg(file_target="/var/www/html/projet2018/data/clean/robot/" +
+                            str(date.datetime.now().date()) + "/"):
     """
         it create a json for each new article
     """
@@ -103,3 +104,4 @@ def recovery_old_article_lg(file_target = '/var/www/html/projet2018/data/clean/r
 
 if __name__ == '__main__':
     recovery_old_article_lg()
+    # /var/www/html/projet2018/data/clean/robot/
