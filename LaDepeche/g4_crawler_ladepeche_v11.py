@@ -9,7 +9,9 @@
  V1.1 : create function
 """
 
+import datetime 
 import re
+
 import g4_utils_v40 as utils
 
 
@@ -58,7 +60,7 @@ def recovery_article_ld(url):
 
 
 
-def recovery_old_articles_LD(file_target = '/var/www/html/projet2018/data/clean/robot/'):
+def recovery_old_articles_LD(file_target = '/var/www/html/projet2018/data/clean/robot/' + str(datetime.datetime.now().date())):
     """
         it create a json for each article
     """
@@ -67,10 +69,13 @@ def recovery_old_articles_LD(file_target = '/var/www/html/projet2018/data/clean/
     links_article = []
     list_articles = []
     for cat in list_category:
-        for i in range(1, 3):
-            url = 'https://www.ladepeche.fr/recherche/?p=' + str(i)\
-                    + '&c=' + cat + '&plus-infos=1'
-            soup = utils.recovery_flux_url_rss(url)
+        for i in range(1, 100):
+            try:
+                url = 'https://www.ladepeche.fr/recherche/?p=' + str(i)\
+                        + '&c=' + cat + '&plus-infos=1'
+                soup = utils.recovery_flux_url_rss(url)
+            except:
+                break
 
         for h2 in soup.find_all('h2'):
             for item in h2.find_all('a'):
