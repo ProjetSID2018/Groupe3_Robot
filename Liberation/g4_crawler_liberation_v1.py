@@ -16,14 +16,12 @@ import requests
 
 def collect_url_articles(url_liberation):
 
-    driver = webdriver.Firefox(executable_path="/Users/aurel/Downloads/geckodriver-v0.19.1-win64/geckodriver")
-    driver.get("http://www.liberation.fr/")
+    driver = webdriver.PhantomJS(executable_path="/var/www/html/projet2018/code/robot/phantom.js")
     time.sleep(2)
 
     for scroll in range(1000):
         driver.execute_script("window.scrollTo(0, 100000)")
 
-    time.sleep(25)
     html_loaded = driver.page_source
 
     soup = BeautifulSoup(html_loaded, "lxml")
@@ -57,10 +55,14 @@ def collect_article(article_link):
         return None
 
     else:
-
         req = requests.get(article_link)
         data = req.text
         soup = BeautifulSoup(data, "lxml")
+        try:
+            theme = re.search("http://www.liberation.fr/(.*)", article_link)[1]
+            theme = theme.split('/')[0]
+        except:
+            theme = ''
 
         if soup.find("div", class_ = "direct-headband") or article_link != req.url:
             return None
@@ -77,11 +79,17 @@ def collect_article(article_link):
             for span in soup.find_all('span'):
                 if span.get("class") == ['author']:
                     if(span.a):
-                        authors.append(span.a.string)
+                        author = span.a.string
+                        if author:
+                            authors.append(author) 
                 if span.get("class") == ['date']:
                     if(span.time):
                         date_p = date.datetime.strptime(span.time.get("datetime"),"%Y-%m-%dT%H:%M:%S").date()
                         date_p = date_p.strftime("%d/%m/%Y")
+            date_p = str(date.datetime.strptime(date_p,
+                                                "%d/%m/%Y").date())
+            if not authors:
+                authors = ["liberation"]
 
             content = ""        
             for div in soup.find_all('div'):
@@ -90,8 +98,8 @@ def collect_article(article_link):
             content = re.sub("<>", "", content)
             content = unidecode.unidecode(content)
             
-            new_article = utils.recovery_article(title, newspaper, authors, date_p, content, " ")
-
+            new_article = utils.recovery_article(title, newspaper, authors, date_p, content, theme)
+            
             return new_article
 
 def recovery_new_articles_libe(file_target="/var/www/html/projet2018/data/clean/robot/" +
@@ -107,13 +115,15 @@ def recovery_new_articles_libe(file_target="/var/www/html/projet2018/data/clean/
 
     number_articles = 0
     for url_article in list_url_articles:
-        list_dictionaries.append(collect_article(url_article))
-        # Buffer
-        number_articles += 1
-        if number_articles % 50 == 0:
-            utils.create_json(file_target, list_dictionaries, 'Liberation/',
-                              'libe')
-            list_dictionaries.clear()
+        article = collect_article(url_article)
+        if article != None:
+            list_dictionaries.append(article)
+            # Buffer
+            number_articles += 1
+            if number_articles % 50 == 0:
+                utils.create_json(file_target, list_dictionaries, 'Liberation/',
+                                  'libe')
+                list_dictionaries.clear()
     utils.create_json(file_target, list_dictionaries, 'Liberation/', 'libe')
 
 
