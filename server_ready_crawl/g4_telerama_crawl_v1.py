@@ -6,20 +6,12 @@
  V0 : create code
  V1 : create function
 """
-import os
-import json
+
 import datetime as date
 import re
-import g4_utils_v33 as utils
+import g4_utils_v40 as utils
 
 # Verifier si le tag contient le texte Copyright
-
-
-def has_copyright(tag):
-    """
-        Verifier si le contenu de la balise contient le mot cle "copyright"
-    """
-    return "Copyright" in tag.get_text()
 
 
 def get_article_of_category(url):
@@ -46,7 +38,6 @@ def get_article(url):
     meta = soup.find("meta", property="og:title").get("content")
     tab = meta.split("-")
     n = len(tab)
-    newspaper = tab[n - 1]
     theme = tab[n - 2]
     title = "-".join(tab[:n - 2])
     authors = []
@@ -56,6 +47,7 @@ def get_article(url):
         authors.append(author.strip())
     date_pub = article.find("span", itemprop="datePublished").get(
         "datetime")[:10].replace("-", "/")
+    date_pub = str(date.datetime.strptime(date_pub, "%d/%m/%Y").date())
     content = ""
     for div in article.find_all(
         "div",
@@ -66,13 +58,8 @@ def get_article(url):
         for p in div.find_all("p"):
             content = content + p.get_text()
     content = regex.sub("", content)
-    return utils.recovery_article(
-        unidecode(title),
-        unidecode(newspaper),
-        authors,
-        date_pub,
-        unidecode(content),
-        unidecode(theme))
+    return utils.recovery_article(title, "Telerama", authors, date_pub,
+                                  content, theme)
 
 
 def is_article(url):
@@ -85,12 +72,10 @@ def is_article(url):
 
 
 def add_articles(
-        file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Telerama/Art/" +
-        str(
-            date.datetime.now().date()) +
-        "/"):
+        file_target="/var/www/html/projet2018/data/clean/robot/" +
+        str(date.datetime.now().date()) + "/"):
     """
-        it create a json for each new article
+        it creates a json for each new article
     """
     categories = {
         "cinema": 40,
@@ -101,8 +86,7 @@ def add_articles(
     articles = []
     for category, nbre in categories.items():
         for i in range(0, nbre):
-            url = "http://www.telerama.fr/" + \
-                category + "/articles?page=" + str(i)
+            url = "http://www.telerama.fr/" + category + "/articles?page=" + str(i)
             articles.extend(get_article_of_category(url))
             utils.create_json(file_target, articles, "Telerama/", "tera")
 

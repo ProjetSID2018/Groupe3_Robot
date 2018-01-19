@@ -47,18 +47,21 @@ def collect_url_articles(list_url_articles, url_theme):
     req = requests.get(url_theme)
     data = req.text
     soup = BeautifulSoup(data, "lxml")
-
-    for div in soup.find_all('div'):
-        if div.get('class') == ['list-view']:
-            for a in div.find_all('a'):
-                if ('http' in a.get('href')
-                        and a.get('href') not in list_url_articles):
-                    list_url_articles.append(a.get('href'))
-                elif ('http' not in a.get('href')
-                        and 'http://www.lepoint.fr' + a.get('href')
-                        not in list_url_articles):
-                    list_url_articles.append('http://www.lepoint.fr' +
-                                             a.get('href'))
+    
+    if req.url == url_theme:
+        for div in soup.find_all('div'):
+            if div.get('class') == ['list-view']:
+                for a in div.find_all('a'):
+                    if ('http' in a.get('href')
+                            and a.get('href') not in list_url_articles):
+                        list_url_articles.append(a.get('href'))
+                    elif ('http' not in a.get('href')
+                            and 'http://www.lepoint.fr' + a.get('href')
+                            not in list_url_articles):
+                        list_url_articles.append('http://www.lepoint.fr' +
+                                                a.get('href'))
+    else: 
+        raise NotImplementedError
 
 
 def collect_articles(list_dictionaries, list_url_articles, theme):
@@ -132,7 +135,7 @@ def recovery_new_articles_lpt(file_target="data/clean/robot/" +
         theme = re.search("http://www.lepoint.fr/(.*)/", url_theme)[1]
 
         collect_url_articles(list_url_articles, url_theme)
-        for index_page in range(2, 5):
+        for index_page in range(2, 100):
             try:
                 collect_url_articles(list_url_articles,
                                     url_theme+"index_"+str(index_page)+".php")

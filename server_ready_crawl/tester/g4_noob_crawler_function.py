@@ -111,14 +111,16 @@ def recovery_new_articles_noob_crawler(file_target="data/clean/robot/" +
             file_json.append(new_article)
             i += 1
         if i == 20:
-            utils.create_json(file_target, file_json, "NouvelObs_crawler/",
+            utils.create_json(file_target, file_json, "NouvelObs/",
                               "noob")
             i = 0
             file_json = []
+            break
 
-    utils.create_json(file_target, file_json, "NouvelObs_crawler/",
+    utils.create_json(file_target, file_json, "NouvelObs/",
                       "noob")
 
 
 if __name__ == '__main__':
+    file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) + "/"
     recovery_new_articles_noob_crawler()
