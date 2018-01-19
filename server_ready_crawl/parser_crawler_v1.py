@@ -5,6 +5,7 @@ Group 4
 @authors: Morgan Seguela, Aurelien PELAT
 """
 
+import sys
 import datetime as date
 import g4_20minutes_ancien_v1 as crwl_min
 # import g4_anciens_articles_equipe as crwl_equi
@@ -13,7 +14,7 @@ import g4_anciens_articles_latribune_V0 as crwl_trib
 import g4_crawler_figaro_v12 as crwl_lfi
 import g4_crawler_lepoint_v12 as crwl_lpt
 import g4_crawler_liberation_v1 as crwl_libe
-import g4_crawler_telerama_v1 as crwl_tele
+import g4_telerama_crawl_v1 as crwl_tele
 import g4_femina_crawler_function as crwl_fem
 import g4_hum_crawler_function as crwl_hum
 import g4_lemonde_crawler as crwl_lmde
@@ -21,6 +22,9 @@ import g4_noob_crawler_function as crwl_noob
 import g4_old_articles_Gorafi_v12 as crwl_gora
 import g4_old_futurasciences_v1 as crwl_fusc
 import g4_scienceetvie_v1 as crwl_scvie
+
+log_file = open('log.log', 'w')
+sys.stdout = log_file
 
 target_file = "/var/www/html/projet2018/data/clean/robot/" + \
     str(date.datetime.now().date()) + "/"
@@ -32,7 +36,6 @@ try:
     print('20 Minutes crawler OK')
 except:
     print('Erreur crawler 20 Minutes')
-
 """
 try:
     crwl_equi.(target_file)
@@ -40,7 +43,6 @@ try:
 except:
     print("Erreur crawler L Equipe")
 """
-
 try:
     crwl_depe.recovery_old_articles_LD(target_file)
     print('La depeche crawler OK')

@@ -81,10 +81,10 @@ def recovery_link_old_articles_lg(url_rss):
     return(link_article)
 
 
-def recovery_old_article_lg():
+def recovery_old_article_lg(file_target = '/var/www/html/projet2018/data/clean/robot/'):
     list_article = []
     url_rss = 'http://www.legorafi.fr/category/'
-    file_target = '/var/www/html/projet2018/data/clean/robot/'
+    
     links_article = recovery_link_old_articles_lg(url_rss)
     for link in links_article:
         new_article = recovery_information_lg(link)

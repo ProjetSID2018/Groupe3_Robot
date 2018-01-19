@@ -15,8 +15,8 @@ import time
 
 
 def collect_url_themes(url_rss_figaro):
-    """Create a list containing the URL or the differents themes
-    Arguments:
+    """Create a list containing the URL of the differents themes
+    Arguments
         url_figaro {string} -- url of the newspaper Le Figaro.fr
 
     Returns:
@@ -40,10 +40,14 @@ def collect_url_themes(url_rss_figaro):
 
 
 def collect_url_articles(url_theme):
+    """Create a list containing the URL of articles
+    Arguments:
+        url_theme {string} -- url of the a theme
 
-    req = requests.get(url_theme)
-    data = req.text
-    soup = BeautifulSoup(data, 'lxml')
+    Returns:
+        list_url_articles {list} -- list of URL (string)
+    """
+    soup = utils.recovery_flux_url_rss(url_theme)
 
     list_url_articles = []
     for item in soup.find_all('item'):
@@ -57,13 +61,20 @@ def collect_url_articles(url_theme):
     return list_url_articles
 
 
-def collect_articles(list_dictionaries, list_url_articles, theme):
+def collect_articles(list_url_articles, theme):
+    """Create a list containing articles (dictionaries)
+    Arguments:
+        list_url_articles {list} -- list of dictionaries
+        theme {string} -- theme of the related list of articles
+
+    Returns:
+        list_dictionaries {list} -- list of articles (dictionaries)
+    """
+    list_dictionaries = []
 
     for url_article in list_url_articles:
         try:
-            req = requests.get(url_article)
-            data = req.text
-            soup = BeautifulSoup(data, 'lxml')
+            soup = utils.recovery_flux_url_rss(url_article)
 
             title = soup.title.string
 
@@ -106,11 +117,15 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
                 list_dictionaries.append(new_article)
 
         except:
-            print("Erreur lors de l'enregistrement de l'article")
+            print("Error: Can't get the article from the URL : " + url_article)
+            pass
+
+    return list_dictionaries
 
 
-def recovery_new_articles_lfi(file_target="data/clean/robot/" +
-                              str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_lfi(
+        file_target="""/var/www/html/projet2018/data/clean/robot/""" +
+        str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
     Arguments:
@@ -125,7 +140,6 @@ def recovery_new_articles_lfi(file_target="data/clean/robot/" +
         theme = re.search("http://www.lefigaro.fr/rss/figaro_(.*).xml",
                           url_theme)[1]
         theme = re.sub("/", "", theme)
-        print("---------------------" + theme + "---------------------------")
 
         list_url_articles = collect_url_articles(url_theme)
 

@@ -93,10 +93,10 @@ def add_articles(
         it create a json for each new article
     """
     categories = {
-        "cinema": 5,
-        "scenes": 5,
-        "enfants": 5,
-        "idees": 5,
+        "cinema": 40,
+        "scenes": 30,
+        "enfants": 3,
+        "idees": 30,
     }
     articles = []
     for category, nbre in categories.items():

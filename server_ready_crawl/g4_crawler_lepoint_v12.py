@@ -105,8 +105,9 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lpt(file_target="/var/www/html/projet2018/data/clean/robot/" +
-                              str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_lpt(
+        file_target="/var/www/html/projet2018/data/clean/robot/" +
+        str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
     Arguments:

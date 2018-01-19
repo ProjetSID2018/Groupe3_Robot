@@ -3,8 +3,9 @@
 
 import re
 from unidecode import unidecode
+import datetime as date
 
-import g4_utils_v33 as utils
+import g4_utils_v40 as utils
 
 
 # Verifier si le tag contient le texte Copyright
@@ -18,7 +19,7 @@ def has_copyright(tag):
 # Prend en parametre une catégorie et retour toutes les articles de cette catégorie
 def get_article_of_category(url):
     result = []
-    soup = utils.recovery_flux_urss(url)
+    soup = utils.recovery_flux_url_rss(url)
     articles = soup.find_all('article')
     for article in articles:
         url_article = "http://www.20minutes.fr"+article.find("a").get("href")
@@ -31,7 +32,7 @@ def get_article_of_category(url):
 # Prend en argument une adresse url (url) et retourne un
 # article en format dictionnaire 
 def get_article(url):
-    soup = utils.recovery_flux_urss(url)
+    soup = utils.recovery_flux_url_rss(url)
     article = soup.find("article")
     # Titre de l'article
     title = article.find("h1").get_text()
@@ -43,6 +44,7 @@ def get_article(url):
                   class_="authorsign-label").get_text()).split(" et ")
     # Date de publication de l'article
     date_pub = article.find("time").get("datetime")
+    date_pub = str(date.datetime.strptime(date_pub, "%d/%m/%Y").date())
     # Theme de l'article
     theme = article.find("ol", class_="breadcrumb-list").find_all("li")[1]\
         .find("span").get_text()
@@ -52,28 +54,26 @@ def get_article(url):
         content = content+p.get_text()
     # Nom du journal
     newspaper = soup.find("footer").find(has_copyright).find("a").get_text()
-    regex = re.compile(r'[\n\r\t]')
-    # Elever les \n \r \t du contenu
-    content = regex.sub("", content)
-    return utils.recovery_article(unidecode(title), unidecode(newspaper),
-                                  authors, date_pub, unidecode(content),
-                                  unidecode(theme))
+
+    return utils.recovery_article(title, newspaper, authors, date_pub, content,
+                                  theme)
 
 
 # Prend en argument une adresse url et retourne vrai s'il
 # est un article et faux sinon
 def is_article(url):
-    soup = utils.recovery_flux_urss(url)
+    soup = utils.recovery_flux_url_rss(url)
     article = soup.find("article")
     return article is not None
 
 
-def recovery_old_article_minutes(file_target="/home/etudiant/Documents/ProjetSID/Groupe4_Robot/Minutes/Art/"):
+def recovery_old_article_minutes(file_target="/var/www/html/projet2018/data/clean/robot/" +
+                              str(date.datetime.now().date()) + "/"):
     # Chemin repertoire des articles
 
     source = "Minutes/"
 
-    soup = utils.recovery_flux_urss("http://www.20minutes.fr")
+    soup = utils.recovery_flux_url_rss("http://www.20minutes.fr")
 
     categories = soup.find("nav", class_="header-nav").find_all("li")
     articles = []
@@ -81,7 +81,8 @@ def recovery_old_article_minutes(file_target="/home/etudiant/Documents/ProjetSID
     for category in categories:
         url = category.find("a").get("href")
         theme = unidecode(category['data-theme'])
-        if theme in ["default", "entertainment", "sport", "economy", "hightech", "planet"]:
+        if theme in ["default", "entertainment", "sport", "economy",
+                     "hightech", "planet"]:
             articles.extend(get_article_of_category(url))
 
     utils.create_json(file_target, articles, source, "min")
