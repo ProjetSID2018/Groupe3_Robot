@@ -60,64 +60,66 @@ def info_articles(article_link):
     # Article theme 
     if(soup.find("li", class_="ariane z2")): 
         theme = soup.find("li", class_="ariane z2").find("a").get_text() 
-    else: 
-        theme = 'Forum' 
- 
+    else:
+        theme = 'Forum'
+
     # Author of the article 
-    if(soup.find("span", class_="auteur")): 
-        if(soup.find("span", class_="auteur").a): 
-            author = soup.find("span", class_="auteur").find("a").get_text() 
-        else: 
-            author = soup.find("span", class_="auteur").get_text() 
-        author = re.sub(r"\s\s+", " ", author) 
-        author = re.sub(r"^ ", "", author) 
-    else: 
-        author = "" 
- 
-    # publication date 
-    da = re.search(r"\d{4}-\d{2}\-\d{2}", soup.find("time").get("datetime"))[0] 
-    if(da): 
-        date_p = date.datetime.strptime(da, "%Y-%m-%d").strftime("%d/%m/%Y") 
-    else: 
-        date_p = str(date.datetime.now().strftime("%d/%m/%Y")) 
- 
-    # Article content 
-    content = "" 
-    for div in soup.find_all('div'): 
-        for p in div.find_all('p'): 
-            content += p.get_text() + " " 
-    content = unidecode.unidecode(re.sub(r"\s\s+", " ", content)) 
- 
-    new_article = utilsg4.recovery_article( 
-        title, newspaper, [author], date_p, content, theme) 
- 
-    return new_article 
- 
-def recuperation_info_lmde(): 
-    # Directory path 
-    file_target = "/Users/nabil/Desktop/data/clean/robot/" + str(date.datetime.now().date()) + "/" 
-    os.makedirs(file_target, exist_ok=True) 
-    source = "l/" 
-    file_target_source = file_target + source 
-    os.makedirs(file_target_source, exist_ok=True) 
-    abbreviation = "lmde" 
-    url = "http://www.lemonde.fr" 
-    links = recent(url) 
-    i = 0 
-    list_articles = [] 
-    for article_link in links: 
-        if "/article/" in article_link: 
-            i += 1 
-            list_articles.append(info_articles(article_link)) 
- 
-            if i == 20: 
-                utilsg4.create_json( 
-                    file_target, list_articles, source, abbreviation) 
-                i = 0 
-                list_articles = [] 
- 
-    utilsg4.create_json(file_target, list_articles, file_target_source, abbreviation) 
- 
- 
-if __name__ == '__main__': 
-    recuperation_info_lmde() 
+    if(soup.find("span", class_="auteur")):
+        if(soup.find("span", class_="auteur").a):
+            author = soup.find("span", class_="auteur").find("a").get_text()
+        else:
+            author = soup.find("span", class_="auteur").get_text()
+        author = re.sub(r"\s\s+", " ", author)
+        author = re.sub(r"^ ", "", author)
+    else:
+        author = ""
+
+    # publication date
+    da = re.search(r"\d{4}-\d{2}\-\d{2}", soup.find("time").get("datetime"))[0]
+    if(da):
+        date_p = date.datetime.strptime(da, "%Y-%m-%d").strftime("%d/%m/%Y")
+    else:
+        date_p = str(date.datetime.now().strftime("%d/%m/%Y"))
+
+    # Article content
+    content = ""
+    for div in soup.find_all('div'):
+        for p in div.find_all('p'):
+            content += p.get_text() + " "
+    content = unidecode.unidecode(re.sub(r"\s\s+", " ", content))
+
+    new_article = utilsg4.recovery_article(
+        title, newspaper, [author], date_p, content, theme)
+
+    return new_article
+
+
+def recuperation_info_lmde():
+    # Directory path
+    file_target = "/Users/nabil/Desktop/data/clean/robot/" + str(date.datetime.now().date()) + "/"
+    os.makedirs(file_target, exist_ok=True)
+    source = "l/"
+    file_target_source = file_target + source
+    os.makedirs(file_target_source, exist_ok=True)
+    abbreviation = "lmde"
+    url = "http://www.lemonde.fr"
+    links = recent(url)
+    i = 0
+    list_articles = []
+    for article_link in links:
+        if "/article/" in article_link:
+            i += 1
+            list_articles.append(info_articles(article_link))
+
+            if i == 20:
+                utilsg4.create_json(
+                    file_target, list_articles, source, abbreviation)
+                i = 0
+                list_articles = []
+
+    utilsg4.create_json(file_target, list_articles, file_target_source,
+                        abbreviation)
+
+
+if __name__ == '__main__':
+    recuperation_info_lmde()
