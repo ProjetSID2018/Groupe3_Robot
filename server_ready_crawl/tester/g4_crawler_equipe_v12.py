@@ -3,6 +3,7 @@
 
 import g4_utils_v40 as utils
 import re
+import datetime as date
 
 
 def recovery_information_equi(url_article):
@@ -112,7 +113,8 @@ def recovery_link_old_articles_equi(url_rss):
     return(link_article)
 
 
-def recovery_old_article_equi(file_target="data/clean/robot/"):
+def recovery_old_article_equi(file_target="data/clean/robot/" +
+                              str(date.datetime.now().date()) + "/"):
     file_json = []
     url_rss = "https://www.lequipe.fr/"
     links_article = recovery_link_old_articles_equi(url_rss)
@@ -124,10 +126,10 @@ def recovery_old_article_equi(file_target="data/clean/robot/"):
             file_json.append(new_article)
             i += 1
         if i == 20:
-            utils.create_json(file_target, file_json, "Equip_old/", "equi")
+            utils.create_json(file_target, file_json, "Equipe/", "equi")
             i = 0
             file_json = []
-    utils.create_json(file_target, file_json, "Equip_old/", "equi")
+    utils.create_json(file_target, file_json, "Equipe/", "equi")
 
 
 if __name__ == '__main__':
