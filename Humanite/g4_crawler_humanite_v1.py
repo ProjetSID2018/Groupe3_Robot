@@ -36,7 +36,7 @@ def recovery_information_hum(url_article):
         if meta.get("property") == 'article:published_time':
             raw_date = meta.get("content")
             date_p = raw_date[0:10]
-            date_p = datetime.strptime(date_p, "%Y-%m-%d")
+            date_p = str(datetime.strptime(date_p, "%Y-%m-%d").date())
 
     contents = ""
     for div in soup_article.find_all('div'):
@@ -48,7 +48,7 @@ def recovery_information_hum(url_article):
                 contents += p.get_text()
 
     article = utils.recovery_article(title, 'Humanite',
-                                     author, date_p, contents, theme)
+                                    author, date_p, contents, theme)
     return(article)
 
 
@@ -69,15 +69,18 @@ def recovery_link_new_articles_hum_crawler():
         # We retrieve the URL feeds for each page of article
         # Each HTML-coded article is analyzed with beautiful soup
         for i in range(2, 10):
-            url_rss_humanite = "https://humanite.fr/" + cat + "?page=" +\
-                str(i) + "/feed/"
-            soup_url = utils.recovery_flux_url_rss(url_rss_humanite)
-            # We retrieve all the articles for a given page
-            for div in soup_url.find_all('div'):
-                if re.search('field-name-field-news-chapo',
-                             str(div.get("class"))):
-                    for a in div.find_all('a'):
-                        article_humanite.append(a.get("href"))
+            try:
+                url_rss_humanite = "https://humanite.fr/" + cat + "?page=" +\
+                    str(i) + "/feed/"
+                soup_url = utils.recovery_flux_url_rss(url_rss_humanite)
+                # We retrieve all the articles for a given page
+                for div in soup_url.find_all('div'):
+                    if re.search('field-name-field-news-chapo',
+                                str(div.get("class"))):
+                        for a in div.find_all('a'):
+                            article_humanite.append(a.get("href"))
+            except:
+                break
 
     return(article_humanite)
 
@@ -98,14 +101,16 @@ def recovery_new_articles_hum_crawler(file_target="data/clean/robot/" +
             file_json.append(new_article)
             i += 1
         if i == 20:
-            utils.create_json(file_target, file_json, "Humanite_crawler/",
-                              "hum")
+            utils.create_json(file_target, file_json, "Humanite/",
+                      "hum")
             i = 0
             file_json = []
 
-    utils.create_json(file_target, file_json, "Humanite_crawler/",
+
+    utils.create_json(file_target, file_json, "Humanite/",
                       "hum")
 
 
 if __name__ == '__main__':
-    recovery_new_articles_hum_crawler()
+    file_target = "/var/www/html/projet2018/data/clean/robot/" + str(date.datetime.now().date()) + "/"
+    recovery_new_articles_hum_crawler(file_target)
