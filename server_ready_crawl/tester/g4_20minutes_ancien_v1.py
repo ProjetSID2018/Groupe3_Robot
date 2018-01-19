@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
 from unidecode import unidecode
 import datetime as date
 
@@ -30,7 +29,7 @@ def get_article_of_category(url):
 
 
 # Prend en argument une adresse url (url) et retourne un
-# article en format dictionnaire 
+# article en format dictionnaire
 def get_article(url):
     soup = utils.recovery_flux_url_rss(url)
     article = soup.find("article")
@@ -40,11 +39,12 @@ def get_article(url):
     if article.find("header").find("p", class_="authorsign-label") is None:
         authors = []
     else:
-        unidecode(article.find("header").find("p",
-                  class_="authorsign-label").get_text()).split(" et ")
+        authors = article.find("header").find("p",
+                              class_="authorsign-label").get_text().split(" et ")
+        
     # Date de publication de l'article
-    date_pub = article.find("time").get("datetime")
-    date_pub = str(date.datetime.strptime(date_pub, "%d/%m/%Y").date())
+    date_pub = article.find("time").get("datetime")[0:10]
+
     # Theme de l'article
     theme = article.find("ol", class_="breadcrumb-list").find_all("li")[1]\
         .find("span").get_text()
@@ -67,8 +67,9 @@ def is_article(url):
     return article is not None
 
 
-def recovery_old_article_minutes(file_target="/var/www/html/projet2018/data/clean/robot/" +
-                              str(date.datetime.now().date()) + "/"):
+def recovery_old_article_minutes(
+        file_target="/var/www/html/projet2018/data/clean/robot/" +
+        str(date.datetime.now().date()) + "/"):
     # Chemin repertoire des articles
 
     source = "Minutes/"
@@ -85,7 +86,7 @@ def recovery_old_article_minutes(file_target="/var/www/html/projet2018/data/clea
                      "hightech", "planet"]:
             articles.extend(get_article_of_category(url))
 
-    utils.create_json(file_target, articles, source, "min")
+        utils.create_json(file_target, articles, source, "min")
 
 
 if __name__ == '__main__':
