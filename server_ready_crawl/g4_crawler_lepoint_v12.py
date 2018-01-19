@@ -8,8 +8,6 @@ V 1.2
 
 import time
 import datetime as date
-from bs4 import BeautifulSoup
-import requests
 import re
 import g4_utils_v40 as utils
 
@@ -22,9 +20,7 @@ def collect_url_themes(url_lepoint):
     Returns:
         list_url_themes {list} -- list of URL (string)
     """
-    req = requests.get(url_lepoint)
-    data = req.text
-    soup = BeautifulSoup(data, "lxml")
+    soup = utils.recovery_flux_url_rss(url_lepoint)
 
     list_url_themes = []
     for li in soup.find_all('li'):
@@ -44,15 +40,12 @@ def collect_url_articles(list_url_articles, url_theme):
         list_url_articles {list} -- list of URL
         url_theme {string} -- URL of a theme
     """
-    req = requests.get(url_theme)
-    data = req.text
-    soup = BeautifulSoup(data, "lxml")
+    soup = utils.recovery_flux_url_rss(url_theme)
 
     for div in soup.find_all('div'):
         if div.get('class') == ['list-view']:
             for a in div.find_all('a'):
-                if ('http' in a.get('href')
-                        and a.get('href') not in list_url_articles):
+                if ('http' in a.get('href') and a.get('href') not in list_url_articles):
                     list_url_articles.append(a.get('href'))
                 elif ('http' not in a.get('href')
                         and 'http://www.lepoint.fr' + a.get('href')
@@ -70,9 +63,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
         theme {string} -- theme related to the list of dictionaries
     """
     for url_article in list_url_articles:
-        req = requests.get(url_article)
-        data = req.text
-        soup = BeautifulSoup(data, "lxml")
+        soup = utils.recovery_flux_url_rss(url_article)
 
         balise_title = soup.title.string
         sep = balise_title.split(" - Le Point")
@@ -114,8 +105,9 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
             list_dictionaries.append(new_article)
 
 
-def recovery_new_articles_lpt(file_target="data/clean/robot/" +
-                              str(date.datetime.now().date()) + "/"):
+def recovery_new_articles_lpt(
+        file_target="/var/www/html/projet2018/data/clean/robot/" +
+        str(date.datetime.now().date()) + "/"):
     """Procedure that calls all the others functions and procedures in order to
     collect articles from a newspaper in a file
     Arguments:

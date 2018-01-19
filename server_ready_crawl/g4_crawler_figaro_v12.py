@@ -6,8 +6,6 @@ Group 4
 V 1.2
 """
 
-from bs4 import BeautifulSoup
-import requests
 import re
 import g4_utils_v40 as utils
 import datetime as date
@@ -22,9 +20,7 @@ def collect_url_themes(url_figaro):
     Returns:
         list_url_themes {list} -- list of URL (string)
     """
-    req = requests.get(url_figaro)
-    data = req.text
-    soup = BeautifulSoup(data, "lxml")
+    soup = utils.recovery_flux_url_rss(url_figaro)
 
     list_url_themes = []
     for a in soup.find_all("a"):
@@ -43,9 +39,7 @@ def collect_url_sub_themes(url_theme):
     Returns:
         list_url_sub_themes {list} -- list of URL (string)
     """
-    req = requests.get(url_theme)
-    data = req.text
-    soup = BeautifulSoup(data, "lxml")
+    soup = utils.recovery_flux_url_rss(url_theme)
 
     list_url_sub_themes = []
     for a in soup.find_all("a"):
@@ -62,9 +56,7 @@ def collect_url_articles(list_url_articles, url_sub_theme):
         list_url_articles {list} -- list of URL
         url_sub_theme {string} -- URL of a sub-theme
     """
-    req = requests.get(url_sub_theme)
-    data = req.text
-    soup = BeautifulSoup(data, "lxml")
+    soup = utils.recovery_flux_url_rss(url_sub_theme)
 
     for h2 in soup.find_all('h2'):
         if ((h2.get('class') == ['fig-profile__headline']
@@ -82,9 +74,7 @@ def collect_articles(list_dictionaries, list_url_articles, theme):
         theme {string} -- theme related to the list of dictionaries
     """
     for url_article in list_url_articles:
-        req = requests.get(url_article)
-        data = req.text
-        soup = BeautifulSoup(data, "lxml")
+        soup = utils.recovery_flux_url_rss(url_article)
 
         title = soup.title.string
 
