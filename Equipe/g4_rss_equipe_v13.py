@@ -1,9 +1,8 @@
 # Group 4
 # DELOEUVRE Noémie, BENJEBRIA Sofian
 
-import g4_utils_v34 as utils
+import g4_utils_v40 as utils
 import re
-from datetime import datetime
 import datetime as date
 
 
@@ -24,10 +23,12 @@ def recovery_information_equipe(url_article):
 
     # Retrieving of the author
     author = []
+    aut = ""
     for meta in soup_article.find_all('meta'):
         if meta.get("name") == 'Author':
             aut = meta.get("content")
-            author.append(aut.encode("latin1").decode())
+            aut = aut.encode("latin1").decode()
+            author.append(aut)
 
     # Retrieving of date of publication
     for div in soup_article.find_all('div'):
@@ -36,8 +37,6 @@ def recovery_information_equipe(url_article):
                 if t.get("itemprop") == 'datePublished':
                     raw_date = t.get("datetime")
                     date_p = raw_date[0:10]
-                    date_p = datetime.strptime(date_p, "%Y-%m-%d")\
-                        .strftime("%Y/%m/%d")
 
     # Retrieving of the artical theme
     theme = ""
@@ -47,6 +46,7 @@ def recovery_information_equipe(url_article):
             theme = theme.encode("latin1").decode()
 
     # Retrieving the content of the article
+    contents = ""
     for div in soup_article.find_all('div'):
         if div.get("itemprop") == 'mainEntityOfPage':
             for div2 in div.find_all('div'):
@@ -60,9 +60,11 @@ def recovery_information_equipe(url_article):
                 span.string = ""
             for block in div.find_all('blockquote'):
                 block.string = ""
-            contents = div.get_text()
-    contents = re.sub(r"\s\s+", " ", contents)
-    contents = contents.replace('°', ' ° ')
+            for p in div.find_all('p'):
+                if p.get("data-type") == 'Accroche':
+                    contents = p.get_text()
+                    contents = re.sub(r"\s\s+", " ", contents)
+                    contents = contents.replace('°', ' ° ')
 
     article = utils.recovery_article(title, 'Equipe',
                                      author, date_p, contents, theme)
@@ -99,6 +101,7 @@ def recovery_new_articles_equipe(file_target="data/clean/robot/" +
             - creation of a json for each new article
     """
     file_json = []
+    i = 0
     list_url = recovery_link_new_articles_equipe("https://www.lequipe.fr/rss/")
     for url in list_url:
         soup_url = utils.recovery_flux_url_rss(url)
@@ -110,9 +113,17 @@ def recovery_new_articles_equipe(file_target="data/clean/robot/" +
             article_equipe.append(re.search(r"<link/>(.*)", str(item))[1])
         # Each article is analized one by one
         for article in article_equipe:
-            file_json.append(recovery_information_equipe(article))
+            new_article = recovery_information_equipe(article)
+            if utils.is_empty(new_article) is False:
+                file_json.append(recovery_information_equipe(article))
+            i += 1
+        if i == 20:
+            utils.create_json(file_target, file_json, "Equipe_rss/",
+                              "equi")
+            i = 0
+            file_json = []
 
-    utils.create_json(file_target, file_json, "Equipe_nouveaux/",
+    utils.create_json(file_target, file_json, "Equipe_rss/",
                       "equi")
 
 
