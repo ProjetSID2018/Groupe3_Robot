@@ -21,7 +21,7 @@ def recovery_information_sv(url_article):
             title = h1.get_text()
 
     # date
-    t_date = soup_article.find("time")["datetime"]
+    date = soup_article.find("time")["datetime"]
 
     # author
     author = []
@@ -48,7 +48,7 @@ def recovery_information_sv(url_article):
 
 
 def recovery_old_articles_sv(
-    file_target="C:/Users/Laetitia/Desktop/Groupe4_Robot" + str(
+    file_target="data/clean/robot/" + str(
         date.datetime.now().date()) + "/"):
     """
         Returns:
@@ -88,14 +88,15 @@ def recovery_old_articles_sv(
                 file_json.append(recovery_information_sv(article))
             i += 1
         if i == 20:
-            utils.create_json(file_target, file_json, "ScienceEtVie_crawler/",
+            utils.create_json(file_target, file_json, "ScienceEtVie/",
                               "sv")
             i = 0
             file_json = []
 
-    utils.create_json(file_target, file_json, "ScienceEtVie_crawler/",
+    utils.create_json(file_target, file_json, "ScienceEtVie/",
                       "sv")
 
 
 if __name__ == '__main__':
     recovery_old_articles_sv()
+    # /var/www/html/projet2018/data/clean/robot/
