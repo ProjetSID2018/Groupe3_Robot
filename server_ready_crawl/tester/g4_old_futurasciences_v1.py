@@ -52,13 +52,13 @@ def recovery_information_fusc(url):
     return(article)
 
 
-def recovery_old_articles_fusc(file_target = '/var/www/html/projet2018/data/clean/robot/'):
+def recovery_old_articles_fusc(file_target = '/var/www/html/projet2018/data/clean/robot/' + str(date.datetime.now().date()) +"/"):
     """
         it create a json for each article
     """
     url = "https://www.futura-sciences.com/sitemap-html/actualites/"
     url_fusc = "https://www.futura-sciences.com"
-    for ii in range(1, 202):
+    for ii in range(1, 203):
         links_article = []
         soup = utils.recovery_flux_url_rss(url + str(ii) + "/")
         for tag_div_link in soup.find_all('div', attrs={"class": "has-divider-bottom latest-item"}):
@@ -69,6 +69,7 @@ def recovery_old_articles_fusc(file_target = '/var/www/html/projet2018/data/clea
             if not utils.is_empty(new_article):
                 list_articles.append(new_article)
         utils.create_json(file_target, list_articles, 'FuturaSciences', 'fusc')
+        break
 
 
 if __name__ == '__main__':

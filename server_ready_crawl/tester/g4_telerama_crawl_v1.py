@@ -16,7 +16,8 @@ import g4_utils_v40 as utils
 
 def get_article_of_category(url):
     """
-        Prend en parametre une catégorie et retour toutes les articles de cette catégorie
+    Prend en parametre une catégorie et retour toutes les articles de cette
+    catégorie
     """
     result = []
     soup = utils.recovery_flux_url_rss(url)
@@ -86,7 +87,8 @@ def add_articles(
     articles = []
     for category, nbre in categories.items():
         for i in range(0, nbre):
-            url = "http://www.telerama.fr/" + category + "/articles?page=" + str(i)
+            url = "http://www.telerama.fr/" + category + \
+                "/articles?page=" + str(i)
             articles.extend(get_article_of_category(url))
             utils.create_json(file_target, articles, "Telerama/", "tera")
 
